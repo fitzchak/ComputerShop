@@ -6,9 +6,9 @@ using ComputerShop.Data.Context.StoredProcedures.Base;
 
 namespace ComputerShop.Data.Context
 {
-    public class ComputerShopInitializer : DropCreateDatabaseIfModelChanges<ComputerShop>
+    public class ComputerShopInitializer : DropCreateDatabaseIfModelChanges<ComputerShopContext>
     {
-        protected override void Seed(ComputerShop context)
+        protected override void Seed(ComputerShopContext context)
         {
             base.Seed(context);
 
@@ -17,15 +17,15 @@ namespace ComputerShop.Data.Context
         }
     }
 
-    public class ComputerShopInitializerOperations// : DropCreateDatabaseIfModelChanges<ComputerShop>
+    public class ComputerShopInitializerOperations// : DropCreateDatabaseIfModelChanges<ComputerShopContext>
     {
-        public virtual void Seed(ComputerShop context)
+        public virtual void Seed(ComputerShopContext context)
         {
             SeedStoredProcedures(context);
             SeedEntities(context);
         }
 
-        protected virtual void SeedStoredProcedures(ComputerShop context)
+        protected virtual void SeedStoredProcedures(ComputerShopContext context)
         {
             SeedComputerStps(context);
             SeedComputerBrandStps(context);
@@ -33,27 +33,27 @@ namespace ComputerShop.Data.Context
             SeedProcessorStps(context);
         }
 
-        protected virtual void SeedComputerStps(ComputerShop context)
+        protected virtual void SeedComputerStps(ComputerShopContext context)
         {
             ProcessCUDScript(context, new ComputerStps(context));
         }
 
-        protected virtual void SeedComputerBrandStps(ComputerShop context)
+        protected virtual void SeedComputerBrandStps(ComputerShopContext context)
         {
             ProcessCUDScript(context, new ComputerBrandStps(context));
         }
 
-        protected virtual void SeedComputerModelStps(ComputerShop context)
+        protected virtual void SeedComputerModelStps(ComputerShopContext context)
         {
             ProcessCUDScript(context, new ComputerModelStps(context));
         }
 
-        protected virtual void SeedProcessorStps(ComputerShop context)
+        protected virtual void SeedProcessorStps(ComputerShopContext context)
         {
             ProcessCUDScript(context, new ProcessorStps(context));
         }
 
-        private void ProcessCUDScript<TEntity>(ComputerShop context, SimpleResultBaseStps<TEntity> stps) 
+        private void ProcessCUDScript<TEntity>(ComputerShopContext context, SimpleResultBaseStps<TEntity> stps) 
             where TEntity : class
         {
             context.Database.ExecuteSqlCommand(stps.GetInsertStp(null).GetCreateScript());
@@ -61,7 +61,7 @@ namespace ComputerShop.Data.Context
             context.Database.ExecuteSqlCommand(stps.GetDeleteStp(null).GetCreateScript());
         }
 
-        protected virtual void SeedEntities(ComputerShop context)
+        protected virtual void SeedEntities(ComputerShopContext context)
         {
 
         }

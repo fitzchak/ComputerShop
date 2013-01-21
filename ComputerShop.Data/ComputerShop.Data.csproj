@@ -37,6 +37,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,9 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\ComputerBrandsContext.cs" />
-    <Compile Include="Context\ComputerShop.cs" />
+    <Compile Include="Context\ComputerShopContext.cs" />
     <Compile Include="Context\ComputerShopInitializerOperations.cs" />
     <Compile Include="Context\DbContextMetadata.cs" />
+    <Compile Include="Context\GenericRepository.cs" />
     <Compile Include="Context\StoredProcedures\Base\BaseStps.cs" />
     <Compile Include="Context\StoredProcedures\Base\SimpleResultBaseStps.cs" />
     <Compile Include="Context\StoredProcedures\Base\SimpleStpResult.cs" />

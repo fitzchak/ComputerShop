@@ -12,9 +12,9 @@ namespace ComputerShop.Data.Test
     [TestClass]
     public class ComputerShopDataTest
     {
-        class ComputerShopTestDropinicialier : DropCreateDatabaseAlways<Context.ComputerShop>
+        class ComputerShopTestDropinicialier : DropCreateDatabaseAlways<Context.ComputerShopContext>
         {
-            protected override void Seed(Context.ComputerShop context)
+            protected override void Seed(Context.ComputerShopContext context)
             {
                 base.Seed(context);
 
@@ -25,7 +25,7 @@ namespace ComputerShop.Data.Test
 
         class ComputerShopTestInitializerOperations : ComputerShopInitializerOperations
         {
-            protected override void SeedEntities(Context.ComputerShop context)
+            protected override void SeedEntities(Context.ComputerShopContext context)
             {
                 base.SeedEntities(context);
 
@@ -68,7 +68,7 @@ namespace ComputerShop.Data.Test
         [TestMethod]
         public void InitDB()
         {
-            var testee = new Context.ComputerShop();
+            var testee = new Context.ComputerShopContext();
 
             var computers = from c in testee.Computers
                             select c;
@@ -86,7 +86,7 @@ namespace ComputerShop.Data.Test
         [TestMethod]
         public void TestStps()
         {
-            var testee = new Context.ComputerShop();
+            var testee = new Context.ComputerShopContext();
             
             Assert.IsNotNull(testee.ComputerStps);
 
@@ -139,7 +139,7 @@ namespace ComputerShop.Data.Test
         [TestMethod]
         public void FindTableMapping()
         {
-            var testee = new Context.ComputerShop();
+            var testee = new Context.ComputerShopContext();
 
             var computers = from c in testee.Computers
                             select c;

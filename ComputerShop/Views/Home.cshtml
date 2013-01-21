@@ -1,0 +1,25 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Home</title>
+</head>
+<body>
+    <div>
+        <h1>Computers</h1>
+        
+        <ul id="computers">
+            @foreach (var computer in Model.Computers)
+            {
+                <li>@computer.Name</li>
+            }
+        </ul>
+
+    </div>
+</body>
+</html>
