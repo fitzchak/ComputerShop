@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FB96C7BA-E5D3-4CE6-A12C-F40B298034F0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ComputerShop.Data</RootNamespace>
+    <AssemblyName>ComputerShop.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Context\ComputerBrandsContext.cs" />
+    <Compile Include="Context\ComputerShop.cs" />
+    <Compile Include="Context\ComputerShopInitializerOperations.cs" />
+    <Compile Include="Context\DbContextMetadata.cs" />
+    <Compile Include="Context\StoredProcedures\Base\BaseStps.cs" />
+    <Compile Include="Context\StoredProcedures\Base\SimpleResultBaseStps.cs" />
+    <Compile Include="Context\StoredProcedures\Base\SimpleStpResult.cs" />
+    <Compile Include="Context\StoredProcedures\Base\StoredProcedure.cs" />
+    <Compile Include="Context\StoredProcedures\Base\StoredProcedureParameters.cs" />
+    <Compile Include="Context\StoredProcedures\Base\TableColumns.cs" />
+    <Compile Include="Context\StoredProcedures\ComputerStps.cs" />
+    <Compile Include="Model\ComputerBrand.cs" />
+    <Compile Include="Model\Computer.cs" />
+    <Compile Include="Model\ComputerModel.cs" />
+    <Compile Include="Model\Entity.cs" />
+    <Compile Include="Model\IHaveDescription.cs" />
+    <Compile Include="Model\IHaveId.cs" />
+    <Compile Include="Model\IHaveName.cs" />
+    <Compile Include="Model\IHaveTimestamp.cs" />
+    <Compile Include="Model\Processor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\EntityFramework.Extensions\EntityFramework.Extensions.csproj">
+      <Project>{02ADE1D8-EEC2-4645-BF96-C029C461DBDC}</Project>
+      <Name>EntityFramework.Extensions</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
