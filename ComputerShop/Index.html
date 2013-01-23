@@ -2,23 +2,51 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
+    <link rel="stylesheet" href="Content/reset.css" media="all" type="text/css" />
+    <link rel="stylesheet" href="Content/default.css" media="all" type="text/css" />
     <link rel="stylesheet" href="Content/web.css" media="all" type="text/css" />
-    
+
     <script src="scripts/jquery.js"></script>
     <script src="scripts/jquery.tmpl.js"></script>
     <script src="scripts/jquery.tmplPlus.js"></script>
-    
+
     <!--<script src="Content/templates.tmpl.html" type="text/html" ></script>-->
 
     <script src="scripts/app/main.js"></script>
-    
-    <style type="text/css">.computer-container { }</style>
-</head>
-    <body>
-        <div class="root" id="idRoot">
-            
-            <div class="computer-container"></div>
+    <script src="scripts/app/util.js"></script>
+    <script src="scripts/app/serverApi.js"></script>
 
+</head>
+<body>
+    <div class="root" id="header-wrapper">
+        <div id="header">
+            <div id="logo">
+                <h1><a href="#">Comp shop</a></h1>
+            </div>
         </div>
-    </body>
+
+        <div id="menu">
+        </div>
+
+    </div>
+    <div id="wrapper">
+        <div id="page-wrapper">
+            <div id="page">
+                <div id="content" class="computers-container">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-bg">
+        <div id="footer-content" class="container">
+            <div id="column1">
+            </div>
+        </div>
+    </div>
+    <div id="footer" class="container">
+        <p>Copyright (c) 2013</p>
+    </div>
+</body>
 </html>

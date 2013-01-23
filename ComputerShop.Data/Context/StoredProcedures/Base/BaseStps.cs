@@ -73,7 +73,7 @@ END
 
                 var entityType = typeof (TEntity);
 
-                var keyValue = entityType.GetProperty(KeyPropertyName).GetValue(Entity);
+                var keyValue = entityType.GetProperty(KeyPropertyName).GetValue(Entity, new object[]{});
 
                 parameters.Add(new SqlParameter(string.Format("@{0}", KeyPropertyName), keyValue));
                 spCall += string.Format(" @{0},", KeyPropertyName);
@@ -83,7 +83,7 @@ END
                     var propertyInfo = entityType.GetProperty(parameter.Key);
                     object value = null;
 
-                    var propertyValue = propertyInfo.GetValue(Entity);
+                    var propertyValue = propertyInfo.GetValue(Entity, new object[]{});
                     if (propertyValue == null)
                     {
                         value = DBNull.Value;
@@ -216,7 +216,7 @@ END
                     var propertyInfo = entityType.GetProperty(parameter.Key);
                     object value = null;
 
-                    var propertyValue = propertyInfo.GetValue(Entity);
+                    var propertyValue = propertyInfo.GetValue(Entity, new object[]{});
                     if (propertyValue == null)
                     {
                         value = DBNull.Value;

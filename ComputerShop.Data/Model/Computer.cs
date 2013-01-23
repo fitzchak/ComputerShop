@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ComputerShop.Data.Model
 {
-    public class Computer : Entity, IHaveDescription
+    public class Computer : Entity, IHaveDescription, IHaveName
     {
         public virtual ComputerBrand ComputerBrand { get; set; }
 
@@ -20,6 +20,8 @@ namespace ComputerShop.Data.Model
         public virtual ComputerModel ComputerModel { get; set; }
         
         public string Description { get; set; }
+        
+        public string Name { get; set; }
     }
 
     public enum CapacityUnitEnum

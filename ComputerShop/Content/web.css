@@ -1,4 +1,13 @@
-﻿body {
+﻿.computers-container {
+    
+    
+    width: 100%;
+    height: 100%;
 }
 
-.root { }
+  .computer-box {
+      display: block;
+      float: left;
+      width: 230px;
+      height: 430px;
+    }

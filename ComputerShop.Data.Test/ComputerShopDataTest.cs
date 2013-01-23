@@ -14,7 +14,7 @@ namespace ComputerShop.Data.Test
     {
         class ComputerShopTestDropinicialier : DropCreateDatabaseAlways<Context.ComputerShopContext>
         {
-            protected override void Seed(Context.ComputerShopContext context)
+            protected override void Seed(ComputerShopContext context)
             {
                 base.Seed(context);
 
@@ -39,6 +39,11 @@ namespace ComputerShop.Data.Test
                             {
                                 Name = "HP"
                             },
+                        new ComputerBrand()
+                            {
+                                Name = "Lenovo"
+                            }
+                    
                     };
 
                 computerBrands.ForEach(computerBrand => context.CompBrands.Add(computerBrand));
@@ -47,11 +52,15 @@ namespace ComputerShop.Data.Test
                 int counter = 0;
                 foreach(var computerBrand in context.CompBrands)
                 {
-                    context.Computers.Add(new Computer()
-                        {
-                            ComputerBrand = computerBrand,
-                            Description = "some PC " + counter
-                        });
+                    for (var i = 0; i < 10; i ++ )
+                    {
+                        context.Computers.Add(new Computer()
+                            {
+                                Name = "name " + i,
+                                ComputerBrand = computerBrand,
+                                Description = "some PC " + i
+                            });
+                    }
 
                     counter++;
                 }
