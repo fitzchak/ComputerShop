@@ -1,44 +1,64 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title></title>
+    <title>Computer shop</title>
     <link rel="stylesheet" href="Content/reset.css" media="all" type="text/css" />
     <link rel="stylesheet" href="Content/default.css" media="all" type="text/css" />
     <link rel="stylesheet" href="Content/web.css" media="all" type="text/css" />
+    <link rel="stylesheet" href="Content/jquery.ui.css" />
 
-    <script src="scripts/jquery.js"></script>
-    <script src="scripts/jquery.tmpl.js"></script>
-    <script src="scripts/jquery.tmplPlus.js"></script>
-
-    <!--<script src="Content/templates.tmpl.html" type="text/html" ></script>-->
-
-    <script src="scripts/app/main.js"></script>
-    <script src="scripts/app/util.js"></script>
-    <script src="scripts/app/serverApi.js"></script>
-
+    <script src="scripts/jquery.js" type="text/javascript"></script>
+    <script src="scripts/jquery.tmpl.js" type="text/javascript"></script>
+    <script src="scripts/jquery.tmplPlus.js" type="text/javascript"></script>
+    <script src="scripts/jquery.ui.js" type="text/javascript"></script>
+    
+    <script src="scripts/q.js" type="text/javascript"></script>
+    <script src="scripts/breeze.debug.js" type="text/javascript"></script>
+    <script src="scripts/knockout-2.2.1.js" type="text/javascript"></script>
+    
+    <script src="/Scripts/underscore.js" type="text/javascript"></script>    
+    <script src="/Scripts/backbone.js" type="text/javascript"></script> 
+    <script src="/Scripts/backbone.stickit.js" type="text/javascript"></script>
+    <script src="/Scripts/q.js" type="text/javascript"></script>
+    <script src="/Scripts/breeze.debug.js" type="text/javascript"></script>
+    
+    <!-- App libraries -->
+<!--    <script type="text/javascript">        app = {} // the application namespace</script>
+    <script src="/Scripts/app/logger.js" type="text/javascript"></script>
+    <script src="/Scripts/app/dataservice.js" type="text/javascript"></script>
+    <script src="/Scripts/app/viewcontroller.js" type="text/javascript"></script>
+-->
+    <script src="scripts/app/util.js" type="text/javascript"></script>
+    <script src="scripts/app/serverApi.js" type="text/javascript"></script>
+    <script src="scripts/app/main.js" type="text/javascript"></script>
 </head>
 <body>
-    <div class="root" id="header-wrapper">
+    <div id="header-wrapper">
         <div id="header">
             <div id="logo">
-                <h1><a href="#">Comp shop</a></h1>
+                <h1>
+                    <a href="#">Comp shop</a></h1>
             </div>
         </div>
-
         <div id="menu">
         </div>
-
     </div>
     <div id="wrapper">
         <div id="page-wrapper">
             <div id="page">
-                <div id="content" class="computers-container">
+                <div id="sidebar">
+                    <h2>your choice</h2>
+                    <input type="text" id="searchByBrand"/>
+                    
+                    <ul class="computer-brands-container style1"></ul>
                     
                 </div>
+                <div id="content" class="computers-container">
+                </div>
+                
             </div>
         </div>
     </div>
-
     <div id="footer-bg">
         <div id="footer-content" class="container">
             <div id="column1">
@@ -46,7 +66,8 @@
         </div>
     </div>
     <div id="footer" class="container">
-        <p>Copyright (c) 2013</p>
+        <p>
+            Copyright (c) 2013</p>
     </div>
 </body>
 </html>

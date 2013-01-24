@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerShop", "ComputerShop\ComputerShop.csproj", "{D5C44ECC-7E80-4D90-B0C4-4A7636E20628}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerShop.Data", "ComputerShop.Data\ComputerShop.Data.csproj", "{FB96C7BA-E5D3-4CE6-A12C-F40B298034F0}"
@@ -10,6 +10,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerShop.Data.Test", "ComputerShop.Data.Test\ComputerShop.Data.Test.csproj", "{A1454B75-EBA9-4E94-A3B2-CB0AA3021C2A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFramework.Extensions", "EntityFramework.Extensions\EntityFramework.Extensions.csproj", "{02ADE1D8-EEC2-4645-BF96-C029C461DBDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C66254C5-364F-4D00-9A52-FED5A996343C}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Activation;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -18,16 +17,16 @@ namespace ComputerShop
 
             //routes.Add(new ServiceRoute("Service", new WebServiceHostFactory(), typeof(Data.Context.ComputerShopContext)));
 
-            routes.MapHttpRoute(
-                name: "Api",
-                routeTemplate: "api"
-                );
+            //routes.MapHttpRoute(
+            //    name: "Api",
+            //    routeTemplate: "api"
+            //    );
 
-            routes.MapHttpRoute(
-                name: "ComputerApi",
-                routeTemplate: "computerApi/{id}",
-                defaults: new {controller = "ComputerApi", id = RouteParameter.Optional}
-                );
+            //routes.MapHttpRoute(
+            //    name: "ComputerApi",
+            //    routeTemplate: "computerApi/{id}",
+            //    defaults: new {controller = "ComputerApi", id = RouteParameter.Optional}
+            //    );
 
             //routes.MapRoute(
             //    name: "Default",

@@ -10,14 +10,14 @@ namespace EntityFramework.Extensions
     {
         private const bool RetrieveNameFromResultDto = false;
 
-        public static IEnumerable<TResult> ExecuteStoredProcedure<TResult>(this Database database, IStoredProcedure<TResult> procedure)
-        {
-            var parameters = CreateSqlParametersFromProperties(procedure);
+        //public static IEnumerable<TResult> ExecuteStoredProcedure<TResult>(this Database database, IStoredProcedure<TResult> procedure)
+        //{
+        //    var parameters = CreateSqlParametersFromProperties(procedure);
 
-            var sqlCommand = CreateSPCommand<TResult>(procedure.GetType().Name, parameters);
+        //    var sqlCommand = CreateSPCommand<TResult>(procedure.GetType().Name, parameters);
 
-            return database.SqlQuery<TResult>(sqlCommand, parameters.Cast<object>().ToArray());
-        }
+        //    return database.SqlQuery<TResult>(sqlCommand, parameters.Cast<object>().ToArray());
+        //}
 
         private static List<SqlParameter> CreateSqlParametersFromProperties<TResult>(IStoredProcedure<TResult> procedure)
         {

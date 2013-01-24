@@ -3,7 +3,7 @@
 if (ComputerShop === undefined) { var ComputerShop = {}; }
 
 if (ComputerShop.Util === undefined) { ComputerShop.Util = {}; }
-ComputerShop.Util = function() {
+ComputerShop.Util = function () {
 
     var host = 'http://localhost:7725/';
 
@@ -20,9 +20,9 @@ ComputerShop.Util = function() {
             }
         });
     }
-    
-    return {
-        CallServer: CallServer,
-    }
 
-}();
+    return {
+        CallServer: CallServer
+    };
+
+} ();

@@ -1,6 +1,7 @@
-using System.ComponentModel.DataAnnotations.Schema;
+//using System.ComponentModel.DataAnnotations.Schema;
+
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
+//using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using ComputerShop.Data.Context.StoredProcedures;
@@ -8,19 +9,15 @@ using ComputerShop.Data.Model;
 
 namespace ComputerShop.Data.Context
 {
-    public class ComputerRepository : GenericRepository<ComputerShopContext, Computer>
-    {
-        public ComputerRepository(ComputerShopContext context) : base(context)
-        {
-        }
-    }
-
     public class ComputerShopContext : DbContext
     {
         private ComputerStps _computerStps;
+
         public DbSet<Computer> Computers { get; set; }
 
         public DbSet<ComputerBrand> CompBrands { get; set; }
+
+        public DbSet<Processor> Processors { get; set; }
 
         public ComputerStps ComputerStps
         {
@@ -59,8 +56,8 @@ namespace ComputerShop.Data.Context
 
             configuration
                 .Property(m => m.Timestamp)
-                .IsConcurrencyToken(true)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+                .IsConcurrencyToken(true);
+                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
             
             configuration
                 .Property(t => t.Id)
@@ -76,14 +73,14 @@ namespace ComputerShop.Data.Context
         private void ConfigureComputerBrand(DbModelBuilder modelBuilder)
         {
             var configuration = modelBuilder.Entity<ComputerBrand>();
-            
+
             configuration
                 .Property(t => t.Timestamp)
                 .IsRowVersion();
 
             configuration.Property(m => m.Timestamp)
-                          .IsConcurrencyToken(true)
-                          .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+                          .IsConcurrencyToken(true);
+                          //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
             
             configuration.ToTable("CompBrand");
             
@@ -110,8 +107,8 @@ namespace ComputerShop.Data.Context
 
             configuration
                 .Property(m => m.Timestamp)
-                .IsConcurrencyToken(true)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+                .IsConcurrencyToken(true);
+                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
             configuration
                 .Property(t => t.Name)
@@ -128,8 +125,8 @@ namespace ComputerShop.Data.Context
 
             configuration
                 .Property(m => m.Timestamp)
-                .IsConcurrencyToken(true)
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+                .IsConcurrencyToken(true);
+                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
             configuration
                 .Property(t => t.Name)

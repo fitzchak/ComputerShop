@@ -1,40 +1,41 @@
 ﻿using System.Linq;
-using System.Net;
 using System.Web.Http;
+using Breeze.WebApi;
 using ComputerShop.Data.Context;
 using ComputerShop.Data.Model;
+using ComputerShop.Data.Repository;
 
 namespace ComputerShop.Controllers
 {
-    public class ComputerApiController : ApiController
-    {
-        protected ComputerRepository Repository { get; set; }
+    //[JsonFormatter, ODataActionFilter]
+    //public class ComputerController : ComputerShopApiController<Computer>
+    //{
+    //    [HttpGet]
+    //    public override IQueryable<Computer> Get()
+    //    {
+    //        return Repository.Context.Computers;
+    //    }
 
-        public ComputerApiController()
-        {
-            Repository = new ComputerRepository(new ComputerShopContext());
-        }
+    //    [HttpGet]
+    //    public string Metadata()
+    //    {
+    //        return base.MetadataProtected();
+    //    }
+    //}
 
-        public ComputerApiController(ComputerRepository repository)
-        {
-            Repository = repository;
-        }
+    //[JsonFormatter, ODataActionFilter]
+    //public class ComputerBrandController : ComputerShopApiController<ComputerBrand>
+    //{
+    //    [HttpGet]
+    //    public override IQueryable<ComputerBrand> Get()
+    //    {
+    //        return Repository.Context.CompBrands;
+    //    }
 
-        public IQueryable<Computer> Get()
-        {
-            return Repository.Get();
-        }
-
-        public Computer Get(int id)
-        {
-            var result = Repository.GetByID(id);
-
-            if (result == null)
-            {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
-            }
-
-            return result;
-        }
-    }
+    //    [HttpGet]
+    //    public string Metadata()
+    //    {
+    //        return base.MetadataProtected();
+    //    }
+    //}
 }

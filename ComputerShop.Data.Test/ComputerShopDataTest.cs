@@ -65,6 +65,23 @@ namespace ComputerShop.Data.Test
                     counter++;
                 }
                 context.SaveChanges();
+
+                var processors = new List<Processor>
+                                     {
+                                         new Processor
+                                             {
+                                                 Name = "Amd",
+                                                 Description = ":just amd"
+                                             },
+                                         new Processor
+                                             {
+                                                 Name = "Intel",
+                                                 Description = ":just intel"
+                                             },
+                                     };
+                processors.ForEach(processor => context.Processors.Add(processor));
+                context.SaveChanges();
+
             }
         }
 
@@ -129,10 +146,10 @@ namespace ComputerShop.Data.Test
                     ComputerBrand = computer.ComputerBrand,
                     ComputerModel = computer.ComputerModel,
                     HarddiskCapacity = computer.HarddiskCapacity,
-                    HarddiskCapacityUnit = computer.HarddiskCapacityUnit,
+                    //HarddiskCapacityUnit = computer.HarddiskCapacityUnit,
                     Processor = computer.Processor,
                     RamCapacity = computer.RamCapacity,
-                    RamUnit = computer.RamUnit,
+                    //RamUnit = computer.RamUnit,
 
                 };
 
