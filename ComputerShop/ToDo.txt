@@ -1,0 +1,12 @@
+﻿Administation page
+will administer
+- computers
+- computerBrands
+- computerModels
+- processors
+
+SQLScripts / auto db creation with entity framework
+
+Computer.Price - show in view
+
+introduce computer detail in view

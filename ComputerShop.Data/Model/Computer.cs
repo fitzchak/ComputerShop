@@ -21,6 +21,8 @@ namespace ComputerShop.Data.Model
         public string Description { get; set; }
         
         public string Name { get; set; }
+
+        public decimal Price { get; set; }
     }
 
     public enum CapacityUnitEnum
