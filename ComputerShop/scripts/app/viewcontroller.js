@@ -4,33 +4,114 @@
 (function ($, Backbone, dataservice) {
 
     // Get templates
-    var content = $("#content");
+    //var content = $("#content");
     var carTemplateSource = $("#car-template").html();
     var optionTemplateSource = $("#option-template").html();
 
+    var computerContent;
     var computerTemplate;
-    var computerBrandTemplate;
+    var computerBrandMenuContent;
+    var computerBrandMenuTemplate;
 
-    $.get('/Content/templates.tmpl.html', function (templates) {
-        computerTemplate = $.template('computerTemplate', $(templates).find('script#computerTemplate').text());
-        computerBrandTemplate = $.template('computerBrandTemplate', $(templates).find('script#computerBrandTemplate').text());
-        templatesLoaded();
+    $(document).ready(function () {
+        documentReady();
     });
 
-    // Computer BB View (extended by stickit)
+    function documentReady() {
+        computerContent = $(".computers-container");
+        computerBrandMenuContent = $(".computer-brand-container");
 
-    var ComputerView = Backbone.View.extend({
+        loadTemplates();
+    }
+
+    var loadTemplates = function () {
+        $.get('/Content/templates.tmpl.html', function (templates) {
+            computerTemplate = $(templates).find('script#computerTemplate').html();
+            computerBrandMenuTemplate = $(templates).find('script#computerBrandMenuTemplate').html();
+            templatesLoaded();
+        });
+    }
+
+    var computerBrandMenuView = Backbone.View.extend({
         bindings: {
             '#name': 'name'
         },
         events: {
-            
+            'click .computer-brand-box': 'filterComputers'
         },
-        render: function() {
+        render: function () {
+            this.$el.html(computerBrandMenuTemplate);
+            this.stickit();
+            return this;
+        },
+        filterComputers: function () {
+            var self = this;
+
+            getComputers(self.model.id);
+        }
+    });
+
+    var ComputerView = Backbone.View.extend({
+        bindings: {
+            '#name': 'name',
+            '#brand-name': {
+                observe: 'computerBrand',
+                onGet: function (value, attrNames) {
+                    // onGet called after title *or* author model attributes change.
+                    return value.get('name');
+                }
+            }
+        },
+        events: {
+            //'click .computer-brand-box': 'filterComputers'
+        },
+        render: function () {
             this.$el.html(computerTemplate);
+
+            this.stickit();
+            return this;
         }
 
     });
+
+    var getComputerBrands = function () {
+        computerBrandMenuContent.empty();
+
+        dataservice.getComputerBrands()
+            .then(gotComputerBrands);
+
+        function gotComputerBrands(computerBrands) {
+            computerBrands.forEach(
+                function (computerBrand) {
+                    var view = new computerBrandMenuView({ model: computerBrand });
+                    computerBrandMenuContent.append(view.render().el);
+                }
+            );
+
+            var mapped = $.map(computerBrands, function (value) {
+                return { value: value.attributes.name };
+            });
+
+            $("#searchByBrand").autocomplete({
+                source: mapped
+            });
+        }
+    };
+
+    var getComputers = function (computerBrandId) {
+        computerContent.empty();
+
+        dataservice.getComputers(computerBrandId)
+            .then(gotComputers);
+
+        function gotComputers(computers) {
+            computers.forEach(
+                function (computer) {
+                    var view = new ComputerView({ model: computer });
+                    computerContent.append(view.render().el);
+                });
+        }
+    };
 
     // Car BB View (extended by stickit)
     var CarView = Backbone.View.extend({
@@ -38,22 +119,22 @@
             '#make-input': 'make',
             '#model-input': 'model',
             '#make-desc': 'make',
-            '#model-desc': 'model',
+            '#model-desc': 'model'
         },
         events: {
             "click #options": "showOptions"
         },
-        render: function() {
+        render: function () {
             this.$el.html(carTemplateSource);
             this.stickit();
             return this;
         },
-        renderOptions: function() {
+        renderOptions: function () {
             var optionsHost = $("#optionsList", this.$el).empty();
             var options = this.model.get("options");
             if (options.length) {
                 options.forEach(
-                    function(option) {
+                    function (option) {
                         var view = new OptionView({ model: option });
                         optionsHost.append(view.render().el);
                     });
@@ -91,32 +172,21 @@
         }
     });
 
-    var getCars = function() {
-        content.empty();
-        dataservice.getCars()
-            .then(gotCars);
-
-        function gotCars(cars) {
-            cars.forEach(// show cars
-                function(car) {
-                    var view = new CarView({ model: car });
-                    content.append(view.render().el);
-                });
-            enableSave();
-        } 
-    };
-
-    var enableSave = function() {
+    var enableSave = function () {
         var saveElements = $(".save");
         saveElements.removeClass("hidden");
         // only add the click handler once
         if (enableSave.initialized) { return; }
-        saveElements.click(function() {
+        saveElements.click(function () {
             dataservice.saveChanges();
         });
         enableSave.initialized = true;
     };
 
-    getCars(); 
-    
+    function templatesLoaded() {
+        getComputers();
+        getComputerBrands();
+    }
+
+
 })(jQuery, Backbone, app.dataservice);

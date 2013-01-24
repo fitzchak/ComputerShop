@@ -19,9 +19,17 @@ app.dataservice = (function (breeze, logger) {
     // manager (aka context) is the service gateway and cache holder
     var manager = new breeze.EntityManager(serviceName);
 
-    var getComputers = function () {
-        return breeze.EntityQuery
-            .from("Computers")
+    var getComputers = function (computerBrandId) {
+        var chunk = breeze.EntityQuery
+            .from("Computers");
+
+        if (computerBrandId > 0) {
+            chunk = chunk
+                .where("computerBrand.id", "==", computerBrandId);
+        }
+
+        return chunk
+            .expand("computerBrand, processor")
             .using(manager)
             .execute()
             .then(querySucceeded)
@@ -31,45 +39,21 @@ app.dataservice = (function (breeze, logger) {
             logger.success("fetched computers");
             return data.results;
         }
-    }
+    };
 
-    // get all cars from the service
-    var getCars = function () {
+    var getComputerBrands = function () {
         return breeze.EntityQuery
-            .from("Cars")
+            .from("ComputerBrands")
             .using(manager)
             .execute()
             .then(querySucceeded)
             .fail(queryFailed);
 
         function querySucceeded(data) {
-            logger.success("fetched cars");
+            logger.success("fetched computer brands");
             return data.results;
         }
     };
-
-    // load the options for this car 
-    // if haven't already done so
-    // 'areOptionsLoaded' is not in Car; we just added it.
-    // returns a promise to deliver the options
-    var loadOptionsIfNotLoaded = function (car) {
-        if (car.areOptionsLoaded) {
-            // options already loaded
-            return Q.fcall(function () {
-                return car.getProperty("options");
-            });
-        }
-        // options not yet loaded; go get 'em
-        return car.entityAspect
-            .loadNavigationProperty("options")
-            .then(function () {
-                logger.success("loaded options for id=" + car.getProperty("id"));
-                car.areOptionsLoaded = true;
-                return car.getProperty("options");
-            })
-            .fail(loadOptionsFailed);
-    };
-
     var saveChanges = function () {
         var msg = manager.hasChanges() ? "changes saved" : "nothing to save";
         return manager.saveChanges()
@@ -79,10 +63,7 @@ app.dataservice = (function (breeze, logger) {
 
     return {
         getComputers: getComputers,
-        
-//        getCars: getCars,
-//        loadOptionsIfNotLoaded: loadOptionsIfNotLoaded,
-//        saveChanges: saveChanges
+        getComputerBrands: getComputerBrands
     };
 
     function queryFailed(error) {

@@ -1,16 +1,17 @@
 ﻿<div id="scripts">
-    <script id="computerTemplate" type="text/x-jQuery-tmpl">
-        <div class="computer-box">
-            <h2>${Name}</h2>
-
-            <!--price: ${formatPrice(price)}-->
-        </div>
+    <script id="computerBrandMenuTemplate" type="text/x-template">
+        <li>
+            <div class="computer-brand-box">
+                <h2 id="name"></h2>
+            </div>
+        </li>
     </script>
-    <script id="computerBrandTemplate" type="text/x-jQuery-tmpl">
-            <li>
-                <div class="computer-brand-box">
-                    <h2>${Name}</h2>
-                </div>
-            </li>
+    <script id="computerTemplate" type="text/x-template">
+        <div class="computer-box">
+            <div> 
+                Name: <h2 id="name"></h2>
+                Brand: <p id="brand-name"></p>
+            </div>
+        </div>
     </script>
 </div>

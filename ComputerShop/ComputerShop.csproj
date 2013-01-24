@@ -111,6 +111,7 @@
     <Content Include="Content\web.css" />
     <Content Include="Global.asax" />
     <Content Include="Index.html" />
+    <Content Include="Index2.html" />
     <Content Include="scripts\app\dataservice.js" />
     <Content Include="scripts\app\logger.js" />
     <Content Include="scripts\app\serverApi.js" />

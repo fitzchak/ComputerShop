@@ -1,31 +1,4 @@
-//Backbone.stickit is a model-view binding plugin for Backbone
-//https://github.com/NYTimes/backbone.stickit
-//The MIT License
-
-//Copyright (c) 2012 The New York Times, CMS Group, Matthew DeLambo <delambo@gmail.com>
-
-//Permission is hereby granted, free of charge, to any person obtaining
-//a copy of this software and associated documentation files (the
-//'Software'), to deal in the Software without restriction, including
-//without limitation the rights to use, copy, modify, merge, publish,
-//distribute, sublicense, and/or sell copies of the Software, and to
-//permit persons to whom the Software is furnished to do so, subject to
-//the following conditions:
-
-//The above copyright notice and this permission notice shall be
-//included in all copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-//EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-//MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-//CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-//TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 (function ($) {
-
-    var evaluatePath, applyViewFn, updateViewBindEl, getFormElVal;
 
     // Backbone.View Mixins
     // --------------------
@@ -51,7 +24,7 @@
         // Using `this.bindings` configuration or the `optionalBindingsConfig`, binds `this.model`
         // or the `optionalModel` to elements in the view.
         stickit: function (optionalModel, optionalBindingsConfig) {
-            var self = this, observeModelEvent,
+            var self = this,
 				model = optionalModel || this.model,
 				bindings = optionalBindingsConfig || this.bindings || {},
 				props = ['autofocus', 'autoplay', 'async', 'checked', 'controls', 'defer', 'disabled', 'hidden', 'loop', 'multiple', 'open', 'readonly', 'required', 'scoped', 'selected'];
@@ -59,56 +32,60 @@
             this._modelBindings || (this._modelBindings = []);
             this.unstickModel(model);
 
-            this.events || (this.events = {});
-
-            // Setup a model event binding with the given function, and track the event in this._modelBindings.
-            observeModelEvent = function (event, fn) {
-                model.on(event, fn, self);
-                self._modelBindings.push({ model: model, event: event, fn: fn });
-            };
+            // Since `this.events` may be a function or hash, we'll create a stickitEvents
+            // property where we can mix in our own set of events. We also need to support
+            // multiple calls to `stickit()` in a single Backbone View.
+            this._stickitEvents = _(_.result(this, 'events') || {}).extend(this._stickitEvents);
 
             // Iterate through the selectors in the bindings configuration and configure
             // the various options for each field.
             _.each(_.keys(bindings), function (selector) {
-                var getVal, modelEvents, eventCallback, format, modelAttr, attributes,
+                var $el, options, modelAttr, visibleCb,
 					config = bindings[selector] || {},
-					bindKey = _.uniqueId(),
-					$el = self.$(selector);
+					bindKey = _.uniqueId();
+
+                // Support ':el' selector - special case selector for the view managed delegate.
+                if (selector != ':el') $el = self.$(selector);
+                else {
+                    $el = self.$el;
+                    selector = '';
+                }
 
                 // Fail fast if the selector didn't match an element.
                 if (!$el.length) return false;
 
-                // Allow shorthand setting of model attributes
-                if (typeof config === 'string') config = { modelAttr: config };
+                // Allow shorthand setting of model attributes - `'selector':'observe'`.
+                if (_.isString(config)) config = { observe: config };
 
-                format = config.format;
-                modelAttr = config.modelAttr;
-                attributes = config.attributes || [];
+                // Keep backward-compatibility for `modelAttr` which was renamed `observe`.
+                modelAttr = config.observe || config.modelAttr;
 
-                // Returns the given `field`'s value from the model, escaping and formatting if necessary.
-                getVal = function (field) {
-                    var val = config.escape ? model.escape(field) : model.get(field);
-                    if (_.isUndefined(val)) val = '';
-                    return format ? applyViewFn(self, format, val, modelAttr) : val;
-                };
+                if (config.updateModel == null) config.updateModel = true;
+                if (config.updateView == null) config.updateView = true;
+
+                // Keep backward-compatibility for `format` which was renamed `onGet`.
+                if (config.format && !config.onGet) config.onGet = config.format;
+
+                // Create the model set options with a unique `bindKey` so that we
+                // can avoid double-binding in the `change:attribute` event handler.
+                options = _.extend({ bindKey: bindKey }, config.setOptions || {});
 
                 // Setup the attributes configuration - a list that maps an attribute or
                 // property `name`, to an `observe`d model attribute, using an optional
-                // `format`ter.
+                // `onGet` formatter.
                 //
                 //     [{
                 //       name: 'attributeOrPropertyName',
                 //       observe: 'modelAttrName'
-                //       format: function(modelAttrVal, modelAttrName) { ... }
+                //       onGet: function(modelAttrVal, modelAttrName) { ... }
                 //     }, ...]
                 //
-                _.each(attributes, function (attrConfig) {
+                _.each(config.attributes || [], function (attrConfig) {
                     var lastClass = '',
 						observed = attrConfig.observe || modelAttr,
 						updateAttr = function () {
-						    var val, updateType = _.indexOf(props, attrConfig.name, true) > -1 ? 'prop' : 'attr';
-						    if (attrConfig.format) val = applyViewFn(self, attrConfig.format, model.get(observed), observed);
-						    else val = model.get(observed);
+						    var updateType = _.indexOf(props, attrConfig.name, true) > -1 ? 'prop' : 'attr',
+								val = getVal(model, observed, attrConfig, self);
 						    // If it is a class then we need to remove the last value and add the new.
 						    if (attrConfig.name == 'class') {
 						        $el.removeClass(lastClass).addClass(val);
@@ -116,165 +93,290 @@
 						    }
 						    else $el[updateType](attrConfig.name, val);
 						};
-                    observeModelEvent('bind:' + observed, updateAttr);
+                    // Keep backward-compatibility for `format` which is now `onGet`.
+                    if (attrConfig.format && !attrConfig.onGet) attrConfig.onGet = attrConfig.format;
+                    _.each(_.flatten([observed]), function (attr) {
+                        observeModelEvent(model, self, 'change:' + attr, updateAttr);
+                    });
                     updateAttr();
                 });
 
-                if (modelAttr) {
-                    // If the bind element is a form element, then configure `this.events` bindings
-                    // so that the model stays in sync with user input/changes.
-                    eventCallback = function (e) {
-                        var options = _.extend({ bindKey: bindKey }, config.setOptions || {});
-                        model.set(modelAttr, getFormElVal($el), options);
+                // If `visible` is configured, then the view element will be shown/hidden
+                // based on the truthiness of the modelattr's value or the result of the
+                // given callback. If a `visibleFn` is also supplied, then that callback
+                // will be executed to manually handle showing/hiding the view element.
+                if (config.visible != null) {
+                    visibleCb = function () {
+                        updateVisibleBindEl($el, getVal(model, modelAttr, config, self), modelAttr, config, self);
                     };
-                    if ($el.is('input[type=radio]') || $el.is('input[type=checkbox]') || $el.is('select'))
-                        self.events['change ' + selector] = eventCallback;
-                    else if ($el.is('input') || $el.is('textarea')) {
-                        self.events['keyup ' + selector] = eventCallback;
-                        self.events['change ' + selector] = eventCallback;
+                    observeModelEvent(model, self, 'change:' + modelAttr, visibleCb);
+                    visibleCb();
+                    return false;
+                }
+
+                if (modelAttr) {
+                    if (isFormEl($el) || isContenteditable($el)) {
+                        // Bind events to the element which will update the model with changes.
+                        _.each(config.eventsOverride || getModelEvents($el), function (type) {
+                            self._stickitEvents[type + '.stickit ' + selector] = function () {
+                                var val = getElVal($el, isContenteditable($el));
+                                // Don't update the model if false is returned from the `updateModel` configuration.
+                                if (evaluateBoolean(self, config.updateModel, val, modelAttr))
+                                    setVal(model, modelAttr, val, options, config.onSet, self);
+                            };
+                        });
                     }
 
-                    // Setup a `bind:modelAttr` observer for the model to keep the view element in sync.
-                    observeModelEvent('bind:' + modelAttr, function (val, options) {
-                        if (options && options.bindKey != bindKey)
-                            updateViewBindEl(self, $el, config, getVal(modelAttr), model);
+                    // Setup a `change:modelAttr` observer to keep the view element in sync.
+                    // `modelAttr` may be an array of attributes or a single string value.
+                    _.each(_.flatten([modelAttr]), function (attr) {
+                        observeModelEvent(model, self, 'change:' + attr, function (model, val, options) {
+                            if (options == null || options.bindKey != bindKey)
+                                updateViewBindEl(self, $el, config, getVal(model, modelAttr, config, self), model);
+                        });
                     });
 
-                    updateViewBindEl(self, $el, config, getVal(modelAttr), model, true);
+                    updateViewBindEl(self, $el, config, getVal(model, modelAttr, config, self), model, true);
                 }
             });
 
-            // We added to `this.events` so we need to re-delegate.
-            this.delegateEvents();
+            // Have Backbone delegate any newly added events in `_stickitEvents`.
+            this.delegateEvents(this._stickitEvents);
 
             // Wrap remove so that we can remove model events when this view is removed.
             this.remove = _.wrap(this.remove, function (oldRemove) {
                 self.unstickModel();
-                oldRemove && oldRemove.call(self);
+                if (oldRemove) oldRemove.call(self);
             });
         }
     });
 
-    // Backbone.Model.set Wrapper
-    // --------------------------
-
-    // Wrap set and fire a `bind:[attribute_name]` for each changed attribute,
-    // unless there is a {bind:false} option.
-    Backbone.Model.prototype.set = _.wrap(Backbone.Model.prototype.set, function (oldSet, key, value, oldOptions) {
-        var attrs, attr, val, ret,
-			options = oldOptions && _.clone(oldOptions) || {},
-			now = this.attributes;
-
-        // Use the parameters to get the `attrs` and `options` objects.
-        if (_.isObject(key) || key == null) {
-            attrs = key;
-            options = value;
-        } else {
-            attrs = {};
-            attrs[key] = value;
-        }
-        options || (options = {});
-
-        // Delegating to Backbone's model.set().
-        ret = oldSet.call(this, attrs, options);
-
-        // Iterate through the attributes that were just set.
-        _.each(_.keys(attrs || {}), _.bind(function (attr) {
-            // Trigger a custom "bind" event for each attribute that has changed, unless {bind:false} option.
-            if (!_.isEqual(now[attr], val) || (options.unset && _.has(now, attr)))
-                this.trigger('bind:' + attr, attrs[attr], options);
-        }, this));
-
-        return ret;
-    });
-
-    // Utilities
-    // ---------
+    // Helpers
+    // -------
 
     // Evaluates the given `path` (in object/dot-notation) relative to the given `obj`.
-    evaluatePath = function (obj, path) {
-        var pathParts = (path || '').split('.');
-        return _.reduce(pathParts, function (memo, i) { return memo[i]; }, obj) || obj;
+    // If the path is null/undefined, then the given `obj` is returned.
+    var evaluatePath = function (obj, path) {
+        var parts = (path || '').split('.');
+        var result = _.reduce(parts, function (memo, i) { return memo[i]; }, obj);
+        return result == null ? obj : result;
     };
 
     // If the given `fn` is a string, then view[fn] is called, otherwise it is a function
     // that should be executed.
-    applyViewFn = function (view, fn) {
+    var applyViewFn = function (view, fn) {
         if (fn) return (_.isString(fn) ? view[fn] : fn).apply(view, _.toArray(arguments).slice(2));
     };
 
-    // Gets the value from the given form element.
-    getFormElVal = function ($el) {
+    var isFormEl = function ($el) {
+        return _.indexOf(['CHECKBOX', 'INPUT', 'SELECT', 'TEXTAREA'], $el[0].nodeName, true) > -1;
+    };
+
+    var isCheckbox = function ($el) { return $el.is('input[type=checkbox]'); };
+
+    var isRadio = function ($el) { return $el.is('input[type="radio"]'); };
+
+    var isNumber = function ($el) { return $el.is('input[type=number]'); };
+
+    var isSelect = function ($el) { return $el.is('select'); };
+
+    var isTextarea = function ($el) { return $el.is('textarea'); };
+
+    var isInput = function ($el) { return $el.is('input'); };
+
+    var isContenteditable = function ($el) { return $el.is('[contenteditable="true"]'); };
+
+    var getSelectedOption = function ($select) { return $select.find('option').not(function () { return !this.selected; }); };
+
+    // Given a function, string (view function reference), or a boolean
+    // value, returns the truthy result. Any other types evaluate as false.
+    var evaluateBoolean = function (view, reference) {
+        if (_.isBoolean(reference)) return reference;
+        else if (_.isFunction(reference) || _.isString(reference))
+            return applyViewFn.apply(this, _.toArray(arguments));
+        return false;
+    };
+
+    // Setup a model event binding with the given function, and track the
+    // event in the view's _modelBindings.
+    var observeModelEvent = function (model, view, event, fn) {
+        model.on(event, fn, view);
+        view._modelBindings.push({ model: model, event: event, fn: fn });
+    };
+
+    // Prepares the given value and sets it into the model.
+    var setVal = function (model, attr, val, options, onSet, context) {
+        if (onSet) val = applyViewFn(context, onSet, val, attr);
+        model.set(attr, val, options);
+    };
+
+    // Returns the given `field`'s value from the `model`, escaping and formatting if necessary.
+    // If `field` is an array, then an array of respective values will be returned.
+    var getVal = function (model, field, config, context) {
+        var val, retrieveVal = function (attr) {
+            var retrieved = config.escape ? model.escape(attr) : model.get(attr);
+            return _.isUndefined(retrieved) ? '' : retrieved;
+        };
+        val = _.isArray(field) ? _.map(field, retrieveVal) : retrieveVal(field);
+        return config.onGet ? applyViewFn(context, config.onGet, val, field) : val;
+    };
+
+    // Returns the list of events needed to bind to the given form element.
+    var getModelEvents = function ($el) {
+        // Binding to `oninput` is off the table since IE9- has buggy to no support, and
+        // using feature detection doesn't work because it is hard to sniff in Firefox.
+        if (isInput($el) || isTextarea($el) || isContenteditable($el))
+            return ['keyup', 'change', 'paste', 'cut'];
+        else return ['change'];
+    };
+
+    // Gets the value from the given element, with the optional hint that the value is html.
+    var getElVal = function ($el, isHTML) {
         var val;
-        if ($el.is('input[type=checkbox]')) val = $el.prop('checked');
-        else if ($el.is('select')) val = $el.find('option:selected').data('stickit_bind_val');
-        else if ($el.is('input[type=number]')) val = Number($el.val());
-        else if ($el.is('input[type="radio"]')) val = $el.filter(':checked').val();
-        else val = $el.val();
+        if (isFormEl($el)) {
+            if (isNumber($el)) val = Number($el.val());
+            else if (isRadio($el)) val = $el.filter(':checked').val();
+            else if (isCheckbox($el)) {
+                if ($el.length > 1) {
+                    val = _.reduce($el, function (memo, el) {
+                        if ($(el).prop('checked')) memo.push($(el).val());
+                        return memo;
+                    }, []);
+                } else {
+                    val = $el.prop('checked');
+                    // If the checkbox has a value attribute defined, then
+                    // use that value. Most browsers use "on" as a default.
+                    var boxval = $el.val();
+                    if (boxval != 'on' && boxval != null) {
+                        if (val) val = $el.val();
+                        else val = null;
+                    }
+                }
+            } else if (isSelect($el)) {
+                if ($el.prop('multiple')) {
+                    val = $(getSelectedOption($el).map(function () {
+                        return $(this).data('stickit_bind_val');
+                    })).get();
+                } else {
+                    val = getSelectedOption($el).data('stickit_bind_val');
+                }
+            }
+            else val = $el.val();
+        } else {
+            if (isHTML) val = $el.html();
+            else val = $el.text();
+        }
         return val;
     };
 
+    // Updates the given element according to the rules for the `visible` api key.
+    var updateVisibleBindEl = function ($el, val, attrName, config, context) {
+        var visible = config.visible, visibleFn = config.visibleFn, isVisible = !!val;
+
+        // If `visible` is a function then it should return a boolean result to show/hide.
+        if (_.isFunction(visible) || _.isString(visible)) isVisible = applyViewFn(context, visible, val, attrName);
+
+        // Either use the custom `visibleFn`, if provided, or execute a standard jQuery show/hide.
+        if (visibleFn) applyViewFn(context, visibleFn, $el, isVisible, attrName);
+        else {
+            if (isVisible) $el.show();
+            else $el.hide();
+        }
+    };
+
     // Update the value of `$el` in `view` using the given configuration.
-    updateViewBindEl = function (view, $el, config, val, model, isInitializing) {
-        var originalVal, radioEl,
-			modelAttr = config.modelAttr,
+    var updateViewBindEl = function (view, $el, config, val, model, isInitializing) {
+        var modelAttr = config.observe || config.modelAttr,
 			afterUpdate = config.afterUpdate,
 			selectConfig = config.selectOptions,
-			updateMethod = config.updateMethod || 'text';
+			updateMethod = config.updateMethod || 'text',
+			originalVal = getElVal($el, (config.updateMethod == 'html' || isContenteditable($el)));
 
-        if ($el.is('input[type=radio]')) {
-            radioEl = $el.filter('[value=' + val + ']');
-            originalVal = radioEl.prop('checked');
-            radioEl.prop('checked', true);
-        } else if ($el.is('input[type=checkbox]')) {
-            originalVal = $el.prop('checked');
-            $el.prop('checked', val === true);
-        } else if ($el.is('input') || $el.is('textarea')) {
-            originalVal = $el.val();
-            if (originalVal !== val) $el.val(val);
-        } else if ($el.is('select')) {
-            var optList, list = selectConfig.collection, fieldVal = model.get(modelAttr);
+        // Don't update the view if `updateView` returns false.
+        if (!evaluateBoolean(view, config.updateView, val)) return;
 
-            // Get the current selected option value if the select options exist.
-            if ($el[0].options.length && $el[0].selectedIndex >= 0)
-                originalVal = $($el[0].options[$el[0].selectedIndex]).data('stickit_bind_val');
+        if (isRadio($el)) $el.filter('[value="' + val + '"]').prop('checked', true);
+        else if (isCheckbox($el)) {
+            if ($el.length > 1) {
+                // There are multiple checkboxes so we need to go through them and check
+                // any that have value attributes that match what's in the array of `val`s.
+                val || (val = []);
+                _.each($el, function (el) {
+                    if (_.indexOf(val, $(el).val()) > -1) $(el).prop('checked', true);
+                    else $(el).prop('checked', false);
+                });
+            } else {
+                if (_.isBoolean(val)) $el.prop('checked', val);
+                else $el.prop('checked', val == $el.val());
+            }
+        } else if (isInput($el) || isTextarea($el)) $el.val(val);
+        else if (isContenteditable($el)) $el.html(val);
+        else if (isSelect($el)) {
+            var optList, list = selectConfig.collection, isMultiple = $el.prop('multiple');
 
             $el.html('');
 
             // The `list` configuration is a function that returns the options list or a string
             // which represents the path to the list relative to `window`.
-            optList = _.isFunction(list) ? list.call(view) : evaluatePath(window, list);
+            optList = _.isFunction(list) ? applyViewFn(view, list) : evaluatePath(window, list);
 
             // Add an empty default option if the current model attribute isn't defined.
-            if (fieldVal == null)
-                $el.append('<option/>').find('option').prop('selected', true).data('stickit_bind_val', fieldVal);
+            if (val == null)
+                $el.append('<option/>').find('option').prop('selected', true).data('stickit_bind_val', val);
 
-            _.each(optList, function (obj) {
-                var option = $('<option/>'), optionVal = obj;
-
-                // If the list contains a null/undefined value, then an empty option should
-                // be appended in the list; otherwise, fill the option with text and value.
-                if (obj != null) {
-                    option.text(obj[selectConfig.labelPath]);
-                    optionVal = evaluatePath(obj, selectConfig.valuePath);
-                }
-
-                // Save the option value so that we can reference it later.
-                option.data('stickit_bind_val', optionVal);
-
-                // Determine if this option is selected.
-                if (optionVal != null && fieldVal != null && optionVal == fieldVal || (_.isObject(fieldVal) && _.isEqual(optionVal, fieldVal)))
-                    option.prop('selected', true);
-
-                $el.append(option);
-            });
+            if (_.isArray(optList)) {
+                addSelectOptions(optList, $el, selectConfig, val, isMultiple);
+            } else {
+                // If the optList is an object, then it should be used to define an optgroup. An
+                // optgroup object configuration looks like the following:
+                //
+                //     {
+                //       'opt_labels': ['Looney Tunes', 'Three Stooges'],
+                //       'Looney Tunes': [{id: 1, name: 'Bugs Bunny'}, {id: 2, name: 'Donald Duck'}],
+                //       'Three Stooges': [{id: 3, name : 'moe'}, {id: 4, name : 'larry'}, {id: 5, name : 'curly'}]
+                //     }
+                //
+                _.each(optList.opt_labels, function (label) {
+                    var $group = $('<optgroup/>').attr('label', label);
+                    addSelectOptions(optList[label], $group, selectConfig, val, isMultiple);
+                    $el.append($group);
+                });
+            }
         } else {
-            originalVal = $el[updateMethod]();
             $el[updateMethod](val);
         }
 
         // Execute the `afterUpdate` callback from the `bindings` config.
         if (!isInitializing) applyViewFn(view, afterUpdate, $el, val, originalVal);
+    };
+
+    var addSelectOptions = function (optList, $el, selectConfig, fieldVal, isMultiple) {
+        _.each(optList, function (obj) {
+            var option = $('<option/>'), optionVal = obj;
+
+            // If the list contains a null/undefined value, then an empty option should
+            // be appended in the list; otherwise, fill the option with text and value.
+            if (obj != null) {
+                option.text(evaluatePath(obj, selectConfig.labelPath || "label"));
+                optionVal = evaluatePath(obj, selectConfig.valuePath || "value");
+            } else if ($el.find('option').length && $el.find('option').eq(0).data('stickit_bind_val') == null) return false;
+
+            // Save the option value so that we can reference it later.
+            option.data('stickit_bind_val', optionVal);
+
+            // Determine if this option is selected.
+            if (!isMultiple && optionVal != null && fieldVal != null && optionVal == fieldVal || (_.isObject(fieldVal) && _.isEqual(optionVal, fieldVal)))
+                option.prop('selected', true);
+            else if (isMultiple && _.isArray(fieldVal)) {
+                _.each(fieldVal, function (val) {
+                    if (_.isObject(val)) val = evaluatePath(val, selectConfig.valuePath);
+                    if (val == optionVal || (_.isObject(val) && _.isEqual(optionVal, val)))
+                        option.prop('selected', true);
+                });
+            }
+
+            $el.append(option);
+        });
     };
 
 })(window.jQuery || window.Zepto);
