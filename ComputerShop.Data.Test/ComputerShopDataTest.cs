@@ -49,6 +49,41 @@ namespace ComputerShop.Data.Test
                 computerBrands.ForEach(computerBrand => context.CompBrands.Add(computerBrand));
                 context.SaveChanges();
 
+                var computerModels = new List<ComputerModel>
+                                         {
+                                             new ComputerModel
+                                                 {
+                                                     Name = "Desktop"
+                                                 },
+                                                 new ComputerModel
+                                                 {
+                                                     Name = "Tower"
+                                                 },
+                                                 new ComputerModel
+                                                 {
+                                                     Name = "Notebook"
+                                                 },
+                                         };
+
+                computerModels.ForEach(computerModel => context.ComputerModels.Add(computerModel));
+                context.SaveChanges();
+
+                var processors = new List<Processor>
+                                     {
+                                         new Processor
+                                             {
+                                                 Name = "Amd",
+                                                 Description = "just amd"
+                                             },
+                                         new Processor
+                                             {
+                                                 Name = "Intel",
+                                                 Description = "just intel"
+                                             },
+                                     };
+                processors.ForEach(processor => context.Processors.Add(processor));
+                context.SaveChanges();
+
                 int counter = 0;
                 foreach(var computerBrand in context.CompBrands)
                 {
@@ -58,30 +93,15 @@ namespace ComputerShop.Data.Test
                             {
                                 Name = "name " + i,
                                 ComputerBrand = computerBrand,
-                                Description = "some PC " + i
+                                Description = "some PC " + i,
+                                Processor = processors[i%2],
+                                ComputerModel = computerModels[i%3]
                             });
                     }
 
                     counter++;
                 }
                 context.SaveChanges();
-
-                var processors = new List<Processor>
-                                     {
-                                         new Processor
-                                             {
-                                                 Name = "Amd",
-                                                 Description = ":just amd"
-                                             },
-                                         new Processor
-                                             {
-                                                 Name = "Intel",
-                                                 Description = ":just intel"
-                                             },
-                                     };
-                processors.ForEach(processor => context.Processors.Add(processor));
-                context.SaveChanges();
-
             }
         }
 

@@ -52,8 +52,26 @@
             '#name': 'name',
             '#brand-name': {
                 observe: 'computerBrand',
-                onGet: function (value, attrNames) {
+                onGet: function (value) {
                     // onGet called after title *or* author model attributes change.
+                    return value.get('name');
+                }
+            },
+            '#model-name': {
+                observe: 'computerModel',
+                onGet: function (value) {
+                    if (value == null) {
+                        return "";
+                    }
+                    return value.get('name');
+                }
+            },
+            '#processor-name': {
+                observe: 'processor',
+                onGet: function (value) {
+                    if (value == null) {
+                        return "";
+                    }
                     return value.get('name');
                 }
             }
@@ -77,6 +95,14 @@
             .then(gotComputerBrands);
 
         function gotComputerBrands(computerBrands) {
+
+            var allComputerBrands = dataservice.createComputerBrand();
+            allComputerBrands.id = -1;
+            allComputerBrands.set('name', 'all');
+
+            var view = new computerBrandMenuView({ model: allComputerBrands });
+            computerBrandMenuContent.append(view.render().el);
+
             computerBrands.forEach(
                 function (computerBrand) {
                     var view = new computerBrandMenuView({ model: computerBrand });
@@ -85,7 +111,7 @@
             );
 
             var mapped = $.map(computerBrands, function (value) {
-                return { value: value.attributes.name };
+                return { value: value.attributes.name, id: value.id };
             });
 
             $("#searchByBrand").autocomplete({
@@ -108,7 +134,7 @@
                 });
         }
     };
-    
+
     function templatesLoaded() {
         getComputers();
         getComputerBrands();

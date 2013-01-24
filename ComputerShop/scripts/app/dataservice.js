@@ -29,7 +29,7 @@ app.dataservice = (function (breeze, logger) {
         }
 
         return chunk
-            .expand("computerBrand, processor")
+            .expand("computerBrand, processor, computerModel")
             .using(manager)
             .execute()
             .then(querySucceeded)
@@ -54,16 +54,24 @@ app.dataservice = (function (breeze, logger) {
             return data.results;
         }
     };
+
+    var createComputerBrand = function () {
+        var computerBrandType = manager.metadataStore.getEntityType("ComputerBrand");
+        var newComputerBrand = computerBrandType.createEntity();
+        return manager.addEntity(newComputerBrand);
+    }
+    
     var saveChanges = function () {
         var msg = manager.hasChanges() ? "changes saved" : "nothing to save";
         return manager.saveChanges()
             .then(function () { logger.success(msg); })
             .fail(saveFailed);
     };
-
+    
     return {
         getComputers: getComputers,
-        getComputerBrands: getComputerBrands
+        getComputerBrands: getComputerBrands,
+        createComputerBrand: createComputerBrand
     };
 
     function queryFailed(error) {

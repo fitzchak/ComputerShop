@@ -19,6 +19,8 @@ namespace ComputerShop.Data.Context
 
         public DbSet<Processor> Processors { get; set; }
 
+        public DbSet<ComputerModel> ComputerModels { get; set; }
+
         public ComputerStps ComputerStps
         {
             get

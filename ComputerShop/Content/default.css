@@ -182,7 +182,7 @@ hr {
 
 #page {
 	overflow: hidden;
-	width: 90%;
+	width: 100%;
 	margin: 0px auto;
 	padding: 50px 40px;
 	color: #8F8F8F;
@@ -228,8 +228,8 @@ hr {
 
 #sidebar {
 	float: left;
-	width: 20%;
-	padding: 0px 0px 20px 0px;
+	width: 15%;
+	padding: 0px 2% 10px 0px;
 }
 
 #sidebar h2 {
