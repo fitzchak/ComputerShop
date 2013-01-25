@@ -29,7 +29,6 @@ namespace ComputerShop.Data.Context
         {
             SeedComputerStps(context);
             SeedComputerBrandStps(context);
-            SeedComputerModelStps(context);
             SeedProcessorStps(context);
         }
 
@@ -41,11 +40,6 @@ namespace ComputerShop.Data.Context
         protected virtual void SeedComputerBrandStps(ComputerShopContext context)
         {
             ProcessCUDScript(context, new ComputerBrandStps(context));
-        }
-
-        protected virtual void SeedComputerModelStps(ComputerShopContext context)
-        {
-            ProcessCUDScript(context, new ComputerModelStps(context));
         }
 
         protected virtual void SeedProcessorStps(ComputerShopContext context)

@@ -1,12 +1,12 @@
-﻿/// <reference path="../breeze.debug.js" /> 
-/// <reference path="../breeze.stickit.js" /> 
+﻿/// <reference path="~/scripts/breeze.debug.js" />
+/// <reference path="~/scripts/backbone.stickit.js" /> 
 
 (function ($, Backbone, dataservice) {
 
     // Get templates
-    var computerContent;
+    var mainContent;
     var computerTemplate;
-    var computerBrandMenuContent;
+    var computerBrandSidebarContent;
     var computerBrandMenuTemplate;
 
     $(document).ready(function () {
@@ -14,8 +14,8 @@
     });
 
     function documentReady() {
-        computerContent = $(".computers-container");
-        computerBrandMenuContent = $(".computer-brand-container");
+        mainContent = $(".main-content");
+        computerBrandSidebarContent = $(".sidebar-content");
 
         loadTemplates();
     }
@@ -26,8 +26,7 @@
             computerBrandMenuTemplate = $(templates).find('script#computerBrandMenuTemplate').html();
             templatesLoaded();
         });
-    }
-
+    };
     var computerBrandMenuView = Backbone.View.extend({
         bindings: {
             '#name': 'name'
@@ -47,9 +46,9 @@
         }
     });
 
-    var ComputerView = Backbone.View.extend({
+    var computerView = Backbone.View.extend({
         bindings: {
-            '#name': 'name',
+            '#description': 'description',
             '#brand-name': {
                 observe: 'computerBrand',
                 onGet: function (value) {
@@ -58,21 +57,43 @@
                 }
             },
             '#model-name': {
-                observe: 'computerModel',
-                onGet: function (value) {
-                    if (value == null) {
-                        return "";
-                    }
-                    return value.get('name');
-                }
+                observe: 'computerModel'
+
             },
             '#processor-name': {
                 observe: 'processor',
                 onGet: function (value) {
                     if (value == null) {
-                        return "";
+                        return dataservice.getNotAvailableValue();
                     }
                     return value.get('name');
+                }
+            },
+            '#ram-capacity': {
+                observe: ['ramCapacity', 'ramUnit'],
+                onGet: function (values) {
+
+                    return values[0] + ' ' + dataservice.convertEnumUnitToString(values[1]);
+                }
+            },
+            '#hdd-capacity': {
+                observe: ['harddiskCapacity', 'harddiskCapacityUnit'],
+                onGet: function (values) {
+                    if (values[0] == "" || values[1] == "") {
+                        return dataservice.getNotAvailableValue();
+                    }
+
+                    return values[0] + ' ' + dataservice.convertEnumUnitToString(values[1]);
+                }
+            },
+            '#price': {
+                observe: 'price',
+                onGet: function (value) {
+                    if (value == "") {
+                        return dataservice.getNotAvailableValue();
+                    }
+
+                    return value + ' eur';
                 }
             }
         },
@@ -89,7 +110,7 @@
     });
 
     var getComputerBrands = function () {
-        computerBrandMenuContent.empty();
+        computerBrandSidebarContent.empty();
 
         dataservice.getComputerBrands()
             .then(gotComputerBrands);
@@ -101,12 +122,12 @@
             allComputerBrands.set('name', 'all');
 
             var view = new computerBrandMenuView({ model: allComputerBrands });
-            computerBrandMenuContent.append(view.render().el);
+            computerBrandSidebarContent.append(view.render().el);
 
             computerBrands.forEach(
                 function (computerBrand) {
                     var view = new computerBrandMenuView({ model: computerBrand });
-                    computerBrandMenuContent.append(view.render().el);
+                    computerBrandSidebarContent.append(view.render().el);
                 }
             );
 
@@ -121,16 +142,17 @@
     };
 
     var getComputers = function (computerBrandId) {
-        computerContent.empty();
-
+        
         dataservice.getComputers(computerBrandId)
             .then(gotComputers);
 
         function gotComputers(computers) {
+            mainContent.empty();
+            
             computers.forEach(
                 function (computer) {
-                    var view = new ComputerView({ model: computer });
-                    computerContent.append(view.render().el);
+                    var view = new computerView({ model: computer });
+                    mainContent.append(view.render().el);
                 });
         }
     };

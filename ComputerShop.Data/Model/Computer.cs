@@ -2,7 +2,7 @@ using System;
 
 namespace ComputerShop.Data.Model
 {
-    public class Computer : Entity, IHaveDescription, IHaveName
+    public class Computer : Entity, IHaveDescription
     {
         public virtual ComputerBrand ComputerBrand { get; set; }
 
@@ -16,17 +16,15 @@ namespace ComputerShop.Data.Model
 
         public CapacityUnitEnum HarddiskCapacityUnit { get; set; }
 
-        public virtual ComputerModel ComputerModel { get; set; }
-        
+        public string ComputerModel { get; set; }
+
         public string Description { get; set; }
         
-        public string Name { get; set; }
-
         public decimal Price { get; set; }
     }
 
     public enum CapacityUnitEnum
     {
-        kB, MB, GB
+        kB = 0, MB = 1, GB = 2, TB = 3
     }
 }

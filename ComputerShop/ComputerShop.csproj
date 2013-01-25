@@ -49,6 +49,9 @@
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
@@ -58,7 +61,7 @@
     <Reference Include="System.Net.Http">
     </Reference>
     <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.20710.0\lib\net40\System.Web.Http.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20710.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
@@ -77,7 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BreezeWebApiConfig.cs" />
-    <Compile Include="Controllers\ComputerApiController.cs" />
     <Compile Include="Controllers\ComputerShopApiController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -109,13 +111,12 @@
     <Content Include="Content\reset.css" />
     <Content Include="Content\templates.tmpl.html" />
     <Content Include="Content\web.css" />
+    <Content Include="Admin.html" />
     <Content Include="Global.asax" />
     <Content Include="Index.html" />
+    <Content Include="scripts\app\admin\admin-viewcontroller.js" />
     <Content Include="scripts\app\dataservice.js" />
     <Content Include="scripts\app\logger.js" />
-    <Content Include="scripts\app\serverApi.js" />
-    <Content Include="scripts\app\main.js" />
-    <Content Include="scripts\app\util.js" />
     <Content Include="scripts\app\viewcontroller.js" />
     <Content Include="scripts\backbone.js" />
     <Content Include="scripts\backbone.min.js" />
@@ -123,15 +124,19 @@
     <Content Include="scripts\breeze.debug.js" />
     <Content Include="scripts\breeze.intellisense.js" />
     <Content Include="scripts\breeze.js" />
+    <Content Include="scripts\es5-sham.min.js" />
+    <Content Include="scripts\es5-shim.min.js" />
     <Content Include="scripts\jquery.ui.js" />
     <Content Include="scripts\jquery.js" />
     <Content Include="scripts\jquery.tmpl.js" />
     <Content Include="scripts\jquery.tmplPlus.js" />
+    <Content Include="scripts\json2.js" />
     <Content Include="scripts\knockout-2.2.1.js" />
     <Content Include="scripts\q.js" />
     <Content Include="scripts\q.min.js" />
     <Content Include="scripts\underscore.js" />
     <Content Include="scripts\underscore.min.js" />
+    <Content Include="ToDo.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

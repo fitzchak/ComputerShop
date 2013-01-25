@@ -2,7 +2,6 @@
 will administer
 - computers
 - computerBrands
-- computerModels
 - processors
 
 SQLScripts / auto db creation with entity framework

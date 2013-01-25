@@ -1,4 +1,9 @@
 ﻿<div id="scripts">
+        
+    <script id="adminMenuTemplate" type="text/x-template">
+        <li><a href="#" accesskey="1" title><div id="name"/></a> </li>
+    </script>
+
     <script id="computerBrandMenuTemplate" type="text/x-template">
         <li>
             <div class="computer-brand-box">
@@ -9,13 +14,46 @@
     <script id="computerTemplate" type="text/x-template">
         <div class="computer-box">
             <div> 
-                <h2><span id="brand-name"></span> <span id="name"></span></h2>
+                <h3><span id="brand-name"/> <span id="model-name"/></h3>
                 <div>
-                    <div>Model: <span id="model-name"></span></div>
-                    <div>Processor: <span id="processor-name"></span></div>
-                    <div>RAM: <span id="ram-capacity"></span><span id="ram-unit"></span></div>
-                    <div>HDD: <span id="hdd-capacity"></span><span id="hdd-unit"></span></div>
-                    <div><span id="description"></span></div>
+                    <div>Processor: <span id="processor-name"/></div>
+                    <div>RAM: <span id="ram-capacity"/><span id="ram-unit"/></div>
+                    <div>HDD: <span id="hdd-capacity"/><span id="hdd-unit"/></div>
+                    <div>Description: <span id="description"/></div>
+                    <div>Price: <span id="price"/></div>
+                </div>
+            </div>
+        </div>
+    </script>
+    
+    <script id="computerEditTemplate" type="text/x-template">
+        <div class="computer-edit-box">
+            <div> 
+                <h3><span id="id"/></h3>
+                <div>
+                    <div>Brand: <select id="brand"/></div>
+                    <div>Model: <input id="model" type="text"/></div>
+                    <div>Processor: <select id="processor"/></div>
+                    <div>RAM: <input id="ram-capacity" type="text" class="small"/><select id="ram-unit"/></div>
+                    <div>HDD: <input id="hdd-capacity" type="text" class="small"/><select id="hdd-unit"/></div>
+                    <div>Description: <input id="description" type="text"/></div>
+                    <div>Price: <input id="price" type="number" class="small"/> eur</div>
+                </div>
+                <div id="actions" class="hidden">
+                    <button id="save">Save</button>
+                    <button id="cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </script>
+    
+    <script id="nameDescriptionEditTemplate" type="text/x-template">
+        <div class="computer-brand-edit-box">
+            <div> 
+                <h3><span id="id"/></h3>
+                <div>
+                    <div>Name: <input id="name"/></div>
+                    <div>Description: <input id="description"/></div>
                 </div>
             </div>
         </div>

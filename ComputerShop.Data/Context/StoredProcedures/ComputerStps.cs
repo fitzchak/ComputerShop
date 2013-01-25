@@ -23,14 +23,6 @@ namespace ComputerShop.Data.Context.StoredProcedures
         }
     }
 
-    public class ComputerModelStps : SimpleResultBaseStps<ComputerModel>
-    {
-        public ComputerModelStps(DbContext context)
-            : base(context)
-        {
-        }
-    }
-
     public class ProcessorStps : SimpleResultBaseStps<Processor>
     {
         public ProcessorStps(DbContext context)

@@ -29,7 +29,7 @@ app.dataservice = (function (breeze, logger) {
         }
 
         return chunk
-            .expand("computerBrand, processor, computerModel")
+            .expand("computerBrand, processor")
             .using(manager)
             .execute()
             .then(querySucceeded)
@@ -39,6 +39,14 @@ app.dataservice = (function (breeze, logger) {
             logger.success("fetched computers");
             return data.results;
         }
+    };
+
+    var getComputerBrandsFromCache = function () {
+        return manager.getEntities("ComputerBrand");
+    };
+
+    var getProcessorsFromCache = function () {
+        return manager.getEntities("Processor");
     };
 
     var getComputerBrands = function () {
@@ -59,19 +67,44 @@ app.dataservice = (function (breeze, logger) {
         var computerBrandType = manager.metadataStore.getEntityType("ComputerBrand");
         var newComputerBrand = computerBrandType.createEntity();
         return manager.addEntity(newComputerBrand);
-    }
-    
-    var saveChanges = function () {
+    };
+
+    var unitToStringDictionary =
+        [
+            { id: 0, value: "kB" },
+            { id: 1, value: "MB" },
+            { id: 2, value: "GB" },
+            { id: 3, value: "TB" }
+        ];
+
+    var getUnits = function () {
+        return unitToStringDictionary;
+    };
+    var convertEnumUnitToString = function (intValue) {
+        return unitToStringDictionary[intValue].value;
+    };
+
+    var getNotAvailableValue = function () {
+        return "NA";
+    };
+
+    var saveChanges = function (entity) {
         var msg = manager.hasChanges() ? "changes saved" : "nothing to save";
-        return manager.saveChanges()
+        return manager.saveChanges(entity)
             .then(function () { logger.success(msg); })
             .fail(saveFailed);
     };
-    
+
     return {
         getComputers: getComputers,
         getComputerBrands: getComputerBrands,
-        createComputerBrand: createComputerBrand
+        getComputerBrandsFromCache: getComputerBrandsFromCache,
+        getProcessorsFromCache: getProcessorsFromCache,
+        getUnits: getUnits,
+        createComputerBrand: createComputerBrand,
+        convertEnumUnitToString: convertEnumUnitToString,
+        getNotAvailableValue: getNotAvailableValue,
+        saveChanges: saveChanges
     };
 
     function queryFailed(error) {

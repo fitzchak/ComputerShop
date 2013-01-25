@@ -1,4 +1,4 @@
-﻿.computers-container
+﻿.main-content, .sidebar-content
 {
 	width: 100%;
 	height: 100%;
@@ -8,9 +8,31 @@
 {
 	display: block;
 	float: left;
-	width: 230px;
-	height: 430px;
+	width: 30%;
+	height: 230px;
 }
-.computer-brand-container
+
+.computer-edit-box, .computer-brand-edit-box
 {
+	display: block;
+	float: left;
+	width: 30%;
+	height: 230px;
+	
+}
+
+.computer-edit-box input, 
+.computer-brand-edit-box input 
+{
+	width: 140px	
+}
+
+.computer-edit-box input.small, 
+.computer-brand-edit-box input.small 
+{
+	width: 70px	
+}
+
+.hidden {
+    display: none;
 }

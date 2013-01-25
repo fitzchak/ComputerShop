@@ -54,7 +54,6 @@
     <Compile Include="Context\StoredProcedures\ComputerStps.cs" />
     <Compile Include="Model\ComputerBrand.cs" />
     <Compile Include="Model\Computer.cs" />
-    <Compile Include="Model\ComputerModel.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\IHaveDescription.cs" />
     <Compile Include="Model\IHaveId.cs" />

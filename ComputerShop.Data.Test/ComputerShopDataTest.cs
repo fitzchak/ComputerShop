@@ -33,39 +33,23 @@ namespace ComputerShop.Data.Test
                     {
                         new ComputerBrand()
                             {
-                                Name = "Dell"
+                                Name = "Dell",
+                                Description = "just dell"
                             },
                         new ComputerBrand()
                             {
-                                Name = "HP"
+                                Name = "HP",
+                                Description = "just hp"
                             },
                         new ComputerBrand()
                             {
-                                Name = "Lenovo"
+                                Name = "Lenovo",
+                                Description = "just Lenovo"
                             }
                     
                     };
 
                 computerBrands.ForEach(computerBrand => context.CompBrands.Add(computerBrand));
-                context.SaveChanges();
-
-                var computerModels = new List<ComputerModel>
-                                         {
-                                             new ComputerModel
-                                                 {
-                                                     Name = "Desktop"
-                                                 },
-                                                 new ComputerModel
-                                                 {
-                                                     Name = "Tower"
-                                                 },
-                                                 new ComputerModel
-                                                 {
-                                                     Name = "Notebook"
-                                                 },
-                                         };
-
-                computerModels.ForEach(computerModel => context.ComputerModels.Add(computerModel));
                 context.SaveChanges();
 
                 var processors = new List<Processor>
@@ -84,18 +68,49 @@ namespace ComputerShop.Data.Test
                 processors.ForEach(processor => context.Processors.Add(processor));
                 context.SaveChanges();
 
+                var prices = new List<decimal>
+                                 {
+                                     500, 699, 399m, 1299.99m
+                                 };
+
+                var computerModels = new List<string>
+                {
+                    "Elite 7500", "Pavilon P6-2303ec", "IdeaCentre", "Vostro"
+                };
+
+                var ramCapacity = new List<int>
+                                   {
+                                       2,
+                                       4,
+                                       3,
+                                       8,
+                                       16
+                                   };
+
+                var hddCapacity = new List<int>
+                                      {
+                                          500, 750, 1000, 2000, 3000
+                                      };
+
                 int counter = 0;
+
+                
                 foreach(var computerBrand in context.CompBrands)
                 {
                     for (var i = 0; i < 10; i ++ )
                     {
                         context.Computers.Add(new Computer()
                             {
-                                Name = "name " + i,
                                 ComputerBrand = computerBrand,
                                 Description = "some PC " + i,
                                 Processor = processors[i%2],
-                                ComputerModel = computerModels[i%3]
+                                Price = prices[i%4],
+                                ComputerModel = computerModels[i%4],
+                                RamCapacity = ramCapacity[i%5],
+                                RamUnit = CapacityUnitEnum.GB,
+                                HarddiskCapacity = hddCapacity[i%5],
+                                HarddiskCapacityUnit = CapacityUnitEnum.GB,
+                                
                             });
                     }
 

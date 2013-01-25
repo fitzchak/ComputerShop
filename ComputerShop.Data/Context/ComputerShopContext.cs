@@ -19,8 +19,6 @@ namespace ComputerShop.Data.Context
 
         public DbSet<Processor> Processors { get; set; }
 
-        public DbSet<ComputerModel> ComputerModels { get; set; }
-
         public ComputerStps ComputerStps
         {
             get
@@ -43,8 +41,6 @@ namespace ComputerShop.Data.Context
 
             ConfigureComputerBrand(modelBuilder);
 
-            ConfigureComputerModel(modelBuilder);
-
             ConfigureProcessor(modelBuilder);
         }
 
@@ -59,8 +55,8 @@ namespace ComputerShop.Data.Context
             configuration
                 .Property(m => m.Timestamp)
                 .IsConcurrencyToken(true);
-                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
-            
+            //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+
             configuration
                 .Property(t => t.Id)
                 .HasColumnName("CompID");
@@ -70,6 +66,14 @@ namespace ComputerShop.Data.Context
                 .WithMany()
                 .Map(m => m.MapKey("CompBrandID"))
                 .WillCascadeOnDelete(false);
+
+            configuration
+                .Property(t => t.ComputerModel)
+                .HasMaxLength(4000);
+
+            configuration
+                .Property(t => t.Description)
+                .HasMaxLength(4000);
         }
 
         private void ConfigureComputerBrand(DbModelBuilder modelBuilder)
@@ -82,10 +86,10 @@ namespace ComputerShop.Data.Context
 
             configuration.Property(m => m.Timestamp)
                           .IsConcurrencyToken(true);
-                          //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
-            
+            //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+
             configuration.ToTable("CompBrand");
-            
+
             configuration
                 .Property(t => t.Id)
                 .HasColumnName("CompBrandID");
@@ -99,24 +103,6 @@ namespace ComputerShop.Data.Context
                 .HasColumnName("CompBrandName");
         }
 
-        private void ConfigureComputerModel(DbModelBuilder modelBuilder)
-        {
-            var configuration = modelBuilder.Entity<ComputerModel>();
-
-            configuration
-                .Property(t => t.Timestamp)
-                .IsRowVersion();
-
-            configuration
-                .Property(m => m.Timestamp)
-                .IsConcurrencyToken(true);
-                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
-
-            configuration
-                .Property(t => t.Name)
-                .HasMaxLength(255);
-        }
-
         private void ConfigureProcessor(DbModelBuilder modelBuilder)
         {
             var configuration = modelBuilder.Entity<Processor>();
@@ -128,7 +114,7 @@ namespace ComputerShop.Data.Context
             configuration
                 .Property(m => m.Timestamp)
                 .IsConcurrencyToken(true);
-                //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+            //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
             configuration
                 .Property(t => t.Name)

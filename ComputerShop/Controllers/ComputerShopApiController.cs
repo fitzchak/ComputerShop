@@ -5,41 +5,48 @@ using Breeze.WebApi;
 using ComputerShop.Data.Context;
 using ComputerShop.Data.Model;
 using ComputerShop.Data.Repository;
+using Newtonsoft.Json.Linq;
 
 namespace ComputerShop.Controllers
 {
     [BreezeController]
     public class ComputerShopController : ApiController 
     {
-        protected EFContextProvider<ComputerShopContext> Repository { get; private set; }
+        protected EFContextProvider<ComputerShopContext> ContextProvider { get; private set; }
 
         protected ComputerShopController()
         {
-            Repository = new EFContextProvider<ComputerShopContext>();
+            ContextProvider = new EFContextProvider<ComputerShopContext>();
         }
 
         [HttpGet]
         public virtual string Metadata()
         {
-            return Repository.Metadata();
+            return ContextProvider.Metadata();
         }
 
         [HttpGet]
         public IQueryable<Computer> Computers()
         {
-            return Repository.Context.Computers;
+            return ContextProvider.Context.Computers;
         }
 
         [HttpGet]
         public IQueryable<ComputerBrand> ComputerBrands()
         {
-            return Repository.Context.CompBrands;
+            return ContextProvider.Context.CompBrands;
         }
 
         [HttpGet]
         public IQueryable<Processor> Processors()
         {
-            return Repository.Context.Processors;
+            return ContextProvider.Context.Processors;
+        }
+
+        [HttpPost]
+        public SaveResult SaveChanges(JObject saveBundle)
+        {
+            return ContextProvider.SaveChanges(saveBundle);
         }
     }
 }
