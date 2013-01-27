@@ -46,6 +46,11 @@ namespace ComputerShop.Data.Test
                             {
                                 Name = "Lenovo",
                                 Description = "just Lenovo"
+                            },
+                        new ComputerBrand()
+                            {
+                                Name = "MSI",
+                                Description = "just MSI"
                             }
                     
                     };

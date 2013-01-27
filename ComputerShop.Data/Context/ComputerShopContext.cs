@@ -107,16 +107,16 @@ namespace ComputerShop.Data.Context
             //    .Property(t => t.Id)
             //    .HasColumnName("CompID");
 
-            //configuration
-            //    .HasRequired(m => m.ComputerBrand)
-            //    .WithMany()
-            //    .Map(m => m.MapKey("CompBrandID"))
-            //    .WillCascadeOnDelete(false);
+            configuration
+                .HasRequired(m => m.ComputerBrand)
+                .WithMany()
+                //.Map(m => m.MapKey("CompBrandID"))
+                .WillCascadeOnDelete(false);
 
-            //configuration
-            //    .HasOptional(m => m.Processor)
-            //    .WithMany()
-            //    .WillCascadeOnDelete(false);
+            configuration
+                .HasRequired(m => m.Processor)
+                .WithMany()
+                .WillCascadeOnDelete(false);
 
             configuration
                 .Property(t => t.ComputerModel)

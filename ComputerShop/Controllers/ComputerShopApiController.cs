@@ -33,6 +33,16 @@ namespace ComputerShop.Controllers
         }
 
         [HttpGet]
+        public object Lookups()
+        {
+            var processors = ContextProvider.Context.Processors;
+            var computerBrands = ContextProvider.Context.CompBrands;
+
+            var lookups = new { processors, computerBrands};
+            return lookups;
+        }
+
+        [HttpGet]
         public IQueryable<Computer> Computers()
         {
             return ContextProvider.Context.Computers;
@@ -96,9 +106,12 @@ namespace ComputerShop.Controllers
                 case "Modified":
                     stp = BaseStps.StpEnum.Update;
                     break;
+                default:
+                    stp = null;
+                    break;
             }
 
-            if (state == null)
+            if (stp == null )
             {
                 return null;
             }

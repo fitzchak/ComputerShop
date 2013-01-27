@@ -135,20 +135,25 @@
                 return { value: value.attributes.name, id: value.id };
             });
 
-            $("#searchByBrand").autocomplete({
-                source: mapped
+            var $searchByBrand = $("#searchByBrand");
+
+            $searchByBrand.autocomplete({
+                source: mapped,
+                select: function (event, ui) {
+                    getComputers(ui.item.id);
+                }
             });
         }
     };
 
     var getComputers = function (computerBrandId) {
-        
+
         dataservice.getComputers(computerBrandId)
             .then(gotComputers);
 
         function gotComputers(computers) {
             mainContent.empty();
-            
+
             computers.forEach(
                 function (computer) {
                     var view = new computerView({ model: computer });

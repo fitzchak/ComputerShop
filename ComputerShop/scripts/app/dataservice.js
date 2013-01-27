@@ -1,4 +1,5 @@
-﻿/// <reference path="../breeze.debug.js" />
+﻿/// <reference path="../breeze.intellisense.js" />
+
 app.dataservice = (function (breeze, logger) {
 
     /*** Breeze Configuration ***/
@@ -18,6 +19,22 @@ app.dataservice = (function (breeze, logger) {
 
     // manager (aka context) is the service gateway and cache holder
     var manager = new breeze.EntityManager(serviceName);
+
+    var getLookups = function () {
+        return breeze.EntityQuery
+            .from("Lookups")
+            .using(manager)
+            .execute()
+            .then(querySucceeded)
+            .fail(queryFailed);
+
+        function querySucceeded(data) {
+            logger.success("fetched all lookups");
+            return data.results;
+        }
+    };
+
+    getLookups();
 
     var getComputers = function (computerBrandId) {
         var chunk = breeze.EntityQuery
@@ -41,12 +58,26 @@ app.dataservice = (function (breeze, logger) {
         }
     };
 
-    var getComputerBrandsFromCache = function () {
-        return manager.getEntities("ComputerBrand");
-    };
-
     var getProcessorsFromCache = function () {
         return manager.getEntities("Processor");
+    };
+
+    var getProcessors = function () {
+        return breeze.EntityQuery
+            .from("Processors")
+            .using(manager)
+            .execute()
+            .then(querySucceeded)
+            .fail(queryFailed);
+
+        function querySucceeded(data) {
+            logger.success("fetched processors");
+            return data.results;
+        }
+    };
+
+    var getComputerBrandsFromCache = function () {
+        return manager.getEntities("ComputerBrand");
     };
 
     var getComputerBrands = function () {
@@ -63,10 +94,22 @@ app.dataservice = (function (breeze, logger) {
         }
     };
 
+    var createEntity = function (type) {
+        var type = manager.metadataStore.getEntityType(type);
+        var newEntity = type.createEntity();
+        return manager.addEntity(newEntity);
+    };
+
     var createComputerBrand = function () {
-        var computerBrandType = manager.metadataStore.getEntityType("ComputerBrand");
-        var newComputerBrand = computerBrandType.createEntity();
-        return manager.addEntity(newComputerBrand);
+        return createEntity("ComputerBrand");
+    };
+
+    var createComputer = function () {
+        return createEntity("Computer");
+    };
+
+    var createProcessor = function () {
+        return createEntity("Processor");
     };
 
     var unitToStringDictionary =
@@ -97,11 +140,18 @@ app.dataservice = (function (breeze, logger) {
 
     return {
         getComputers: getComputers,
+        createComputer: createComputer,
+        
         getComputerBrands: getComputerBrands,
-        getComputerBrandsFromCache: getComputerBrandsFromCache,
-        getProcessorsFromCache: getProcessorsFromCache,
-        getUnits: getUnits,
         createComputerBrand: createComputerBrand,
+        getComputerBrandsFromCache: getComputerBrandsFromCache,
+        
+        getProcessors: getProcessors,
+        createProcessor: createProcessor,
+        getProcessorsFromCache: getProcessorsFromCache,
+        
+        getUnits: getUnits,
+        
         convertEnumUnitToString: convertEnumUnitToString,
         getNotAvailableValue: getNotAvailableValue,
         saveChanges: saveChanges

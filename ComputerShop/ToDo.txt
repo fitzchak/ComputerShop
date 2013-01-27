@@ -5,13 +5,13 @@ XXX- computerBrands
 XXX- processors
 
 XXXdelete/insert/update thru stp
-- do insert
-- add new entity
+XXX - do insert
+XXX - add new entity
 
-autocompleteBox bind to selections
+XXX autocompleteBox bind to selections
 
 SQLScripts / auto db creation with entity framework
 
-Computer.Price - show in view
+XXX Computer.Price - show in view
 
 introduce computer detail in view
