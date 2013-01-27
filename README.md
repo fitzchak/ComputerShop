@@ -6,7 +6,7 @@ required ecmaScript 5 compatible browser
 
 Use the Index.html to view the public interface and Admin.html to do the administration.
 
-This is taken as the proofOfConcept on this slice of technologies
+This is taken as the proofOfConcept on this slice of technologies/libraries
 
 SERVER
 - MSSql
