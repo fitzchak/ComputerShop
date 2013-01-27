@@ -4,9 +4,11 @@ XXX- computers
 XXX- computerBrands
 XXX- processors
 
-delete/insert/update thru stp
+XXXdelete/insert/update thru stp
+- do insert
+- add new entity
 
-add new entity
+autocompleteBox bind to selections
 
 SQLScripts / auto db creation with entity framework
 
