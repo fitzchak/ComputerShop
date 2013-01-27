@@ -1,8 +1,12 @@
 ﻿Administation page
 will administer
-- computers
-- computerBrands
-- processors
+XXX- computers
+XXX- computerBrands
+XXX- processors
+
+delete/insert/update thru stp
+
+add new entity
 
 SQLScripts / auto db creation with entity framework
 

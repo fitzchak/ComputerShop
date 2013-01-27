@@ -19,7 +19,7 @@ namespace EntityFramework.Extensions
         //    return database.SqlQuery<TResult>(sqlCommand, parameters.Cast<object>().ToArray());
         //}
 
-        private static List<SqlParameter> CreateSqlParametersFromProperties<TResult>(IStoredProcedure<TResult> procedure)
+        private static List<SqlParameter> CreateSqlParametersFromProperties<TResult>(IStoredProcedure procedure)
         {
             var procedureType = procedure.GetType();
             var propertiesOfProcedure = procedureType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -30,7 +30,7 @@ namespace EntityFramework.Extensions
             return parameters;
         }
 
-        private static SqlParameter ConvertPropertyToSpParameter<TResult>(IStoredProcedure<TResult> procedure, PropertyInfo propertyInfo)
+        private static SqlParameter ConvertPropertyToSpParameter(IStoredProcedure procedure, PropertyInfo propertyInfo)
         {
             return new SqlParameter(string.Format("@{0}", (object)propertyInfo.Name),
                                     propertyInfo.GetValue(procedure, new object[] { }));

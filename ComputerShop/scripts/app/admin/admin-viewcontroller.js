@@ -8,7 +8,7 @@
     var content;
 
     var computerEditTemplate;
-    var computerBrandEditTemplate;
+    var nameDescriptionEditTemplate;
 
     $(document).ready(function () {
         documentReady();
@@ -16,14 +16,14 @@
 
     function documentReady() {
         content = $(".main-content");
-        menuContent = $("#menuList");
+        menuContent = $("#menu-wrapper");
         loadTemplates();
     }
 
     var loadTemplates = function () {
         $.get('/Content/templates.tmpl.html', function (templates) {
             computerEditTemplate = $(templates).find('script#computerEditTemplate').html();
-            computerBrandEditTemplate = $(templates).find('script#computerBrandEditTemplate').html();
+            nameDescriptionEditTemplate = $(templates).find('script#nameDescriptionEditTemplate').html();
             menuTemplate = $(templates).find('script#adminMenuTemplate').html();
 
             templatesLoaded();
@@ -32,34 +32,79 @@
 
     var menuView = Backbone.View.extend({
         bindings: {
-            '#name': 'name'
+            '#items': {
+                observe: 'items',
+                updateMethod: 'html',
+                onGet: function (items) {
+
+                    var result = '';
+
+                    items.forEach(function (item) {
+                        result += '<li><a href="#" accesskey="1" class="' + item.name + '">' + item.name + '</a></li>';
+                    });
+
+                    return result;
+                }
+            }
         },
         events: {
-
+            'click #items': 'clicked'
         },
         render: function () {
             this.$el.html(menuTemplate);
             this.stickit();
 
             return this;
-        }
-    }
-    );
+        },
+        clicked: function (data) {
+            var passedName = data.toElement.className;
 
-    var computerBrandEditView = Backbone.View.extend({
+            var items = this.model.get('items');
+            var foundFunction;
+
+            items.forEach(function (item) {
+                if (item.name == passedName) {
+                    foundFunction = item.func;
+                }
+            });
+
+            foundFunction();
+        }
+    });
+
+    var nameDescriptionEditView = Backbone.View.extend({
         bindings: {
             '#id': 'id',
             '#name': 'name',
             '#description': 'description'
         },
         events: {
-
+            'click #save': 'save',
+            'click #cancel': 'cancel'
         },
         render: function () {
-            this.$el.html(computerBrandEditTemplate);
+            this.$el.html(nameDescriptionEditTemplate);
+
+            this.model.entityAspect.propertyChanged.subscribe(function (changeArgs) {
+                if (changeArgs.propertyName == null || changeArgs.propertyName == 'timestamp') {
+                    return;
+                }
+                // show save and cancel buttons
+                $("#actions", self.$el).removeClass('hidden');
+
+            });
+
             this.stickit();
 
             return this;
+        },
+        save: function () {
+            dataservice.saveChanges([this.model]);
+            $("#actions", self.$el).addClass('hidden');
+        },
+        cancel: function () {
+            this.model.entityAspect.rejectChanges();
+            $("#actions", self.$el).addClass('hidden');
         }
     });
 
@@ -114,9 +159,9 @@
             '#price': 'price'
         },
         events: {
-            //'click .computer-brand-box': 'filterComputers'
             'click #save': 'save',
-            'click #cancel': 'cancel'
+            'click #cancel': 'cancel',
+            'click #delete': 'deleteAction'
         },
         render: function () {
             this.$el.html(computerEditTemplate);
@@ -142,30 +187,34 @@
         cancel: function () {
             this.model.entityAspect.rejectChanges();
             $("#actions", self.$el).addClass('hidden');
+        },
+        deleteAction: function () {
+            this.model.entityAspect.setDeleted();
+            dataservice.saveChanges([this.model]);
+
+            getComputers();
         }
-
-
     });
 
     var getProcessors = function () {
-
+        var processors = dataservice.getProcessorsFromCache();
+        showNameDescriptionItemViews(processors);
     };
 
     var getComputerBrands = function () {
+        var brands = dataservice.getComputerBrandsFromCache();
+        showNameDescriptionItemViews(brands);
+    };
+
+    function showNameDescriptionItemViews(items) {
         content.empty();
-
-        dataservice.getComputerBrands()
-            .then(gotComputerBrands);
-
-        function gotComputerBrands(computerBrands) {
-            computerBrands.forEach(
+        items.forEach(
                 function (computerBrand) {
-                    var view = new computerBrandEditView({ model: computerBrand });
+                    var view = new nameDescriptionEditView({ model: computerBrand });
                     content.append(view.render().el);
                 }
             );
-        }
-    };
+    }
 
     var getComputers = function (computerBrandId) {
 
@@ -183,27 +232,29 @@
         }
     };
 
-    var showMenu = function() {
-        var menuItems = [
-            { Name: "Computers", func: getComputers },
-            { Name: "Brands", func: getComputerBrands },
-            { Name: "Processors", func: getProcessors }
-        ];
+    var showMenu = function () {
+
+        var MenuItems = Backbone.Model.extend({
+
+        });
+
+        var menuItems = new MenuItems(
+            {
+                items: [
+                    { name: "Computers", func: getComputers },
+                    { name: "Brands", func: getComputerBrands },
+                    { name: "Processors", func: getProcessors }
+                ]
+            });
 
         menuContent.empty();
 
-        menuItems.forEach(
-                function (item) {
-                    var view = new menuView({ model: item });
-                    menuContent.append(view.render().el);
-                });
+        var view = new menuView({ model: menuItems });
+        menuContent.append(view.render().el);
     };
 
     function templatesLoaded() {
         getComputers();
         showMenu();
-        //getComputerBrands();
     }
-
-
 })(jQuery, Backbone, app.dataservice);

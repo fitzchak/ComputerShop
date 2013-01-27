@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -123,7 +124,7 @@ namespace ComputerShop.Data.Test
         [TestInitialize]
         public void SetUp()
         {
-            Database.SetInitializer(new ComputerShopTestDropinicialier());
+           Database.SetInitializer(new ComputerShopTestDropinicialier());
         }
 
         [TestMethod]
@@ -157,7 +158,7 @@ namespace ComputerShop.Data.Test
                             select c;
 
             var computer = computers.First();
-            computer.Description = "new description";
+            computer.Description = new Random(2244).Next() + "new description" + new Random(2255).Next();
 
             stps.GetUpdateStp(computer).Execute(testee);
 
@@ -166,6 +167,7 @@ namespace ComputerShop.Data.Test
                             select c;
             
             Assert.IsTrue(computers.SingleOrDefault() != null);
+            Assert.IsTrue(computers.Single().Description == computer.Description);
 
             stps.GetDeleteStp(computer.Id).Execute(testee);
 
@@ -181,11 +183,11 @@ namespace ComputerShop.Data.Test
                     ComputerBrand = computer.ComputerBrand,
                     ComputerModel = computer.ComputerModel,
                     HarddiskCapacity = computer.HarddiskCapacity,
-                    //HarddiskCapacityUnit = computer.HarddiskCapacityUnit,
+                    HarddiskCapacityUnit = computer.HarddiskCapacityUnit,
                     Processor = computer.Processor,
                     RamCapacity = computer.RamCapacity,
-                    //RamUnit = computer.RamUnit,
-
+                    RamUnit = computer.RamUnit,
+                    Price = computer.Price
                 };
 
             stps.GetInsertStp(newComputer).Execute(testee);

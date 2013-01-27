@@ -131,7 +131,8 @@ namespace ComputerShop.Data.Context
             var tableMetadata = GetTableMetadata<TEntity>(context);
 
             return from modelMember in modelMetadata.Members
-                         select new KeyValuePair<string, EdmMember>
+                   where modelMetadata.Members.IndexOf(modelMember) < tableMetadata.Members.Count
+                   select new KeyValuePair<string, EdmMember>
                              (
                              modelMember.Name,
                              tableMetadata.Members[modelMetadata.Members.IndexOf(modelMember)]

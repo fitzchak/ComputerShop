@@ -4,8 +4,10 @@ namespace ComputerShop.Data.Model
 {
     public class Computer : Entity, IHaveDescription
     {
+        public int ComputerBrandId { get; set; }
         public virtual ComputerBrand ComputerBrand { get; set; }
 
+        public int ProcessorId { get; set; }
         public virtual Processor Processor { get; set; }
 
         public decimal RamCapacity { get; set; }

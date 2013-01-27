@@ -1,10 +1,12 @@
 //using System.ComponentModel.DataAnnotations.Schema;
 
+using System;
 using System.Data.Entity;
 //using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using ComputerShop.Data.Context.StoredProcedures;
+using ComputerShop.Data.Context.StoredProcedures.Base;
 using ComputerShop.Data.Model;
 
 namespace ComputerShop.Data.Context
@@ -12,6 +14,8 @@ namespace ComputerShop.Data.Context
     public class ComputerShopContext : DbContext
     {
         private ComputerStps _computerStps;
+        private ProcessorStps _processorStps;
+        private ComputerBrandStps _computerBrandStps;
 
         public DbSet<Computer> Computers { get; set; }
 
@@ -28,6 +32,49 @@ namespace ComputerShop.Data.Context
                     _computerStps = new ComputerStps(this);
                 }
                 return _computerStps;
+            }
+        }
+        
+        public ProcessorStps ProcessorStps
+        {
+            get
+            {
+                if (_processorStps == null)
+                {
+                    _processorStps = new ProcessorStps(this);
+                }
+                return _processorStps;
+            }
+        }
+
+        public ComputerBrandStps ComputerBrandStps
+        {
+            get
+            {
+                if (_computerBrandStps == null)
+                {
+                    _computerBrandStps = new ComputerBrandStps(this);
+                }
+                return _computerBrandStps;
+            }
+        }
+
+        public void ExecuteStp<TEntity>(TEntity entity, SimpleResultBaseStps<TEntity> stps, BaseStps.StpEnum stp)
+            where TEntity : class, IHaveId
+        {
+            switch (stp)
+            {
+                case BaseStps.StpEnum.Update:
+                    stps.GetUpdateStp(entity).Execute(this);
+                    break;
+                case BaseStps.StpEnum.Insert:
+                    stps.GetInsertStp(entity).Execute(this);
+                    break;
+                case BaseStps.StpEnum.Delete:
+                    stps.GetDeleteStp(entity.Id).Execute(this);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("stp");
             }
         }
 
@@ -55,17 +102,21 @@ namespace ComputerShop.Data.Context
             configuration
                 .Property(m => m.Timestamp)
                 .IsConcurrencyToken(true);
-            //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
-            configuration
-                .Property(t => t.Id)
-                .HasColumnName("CompID");
+            //configuration
+            //    .Property(t => t.Id)
+            //    .HasColumnName("CompID");
 
-            configuration
-                .HasRequired(m => m.ComputerBrand)
-                .WithMany()
-                .Map(m => m.MapKey("CompBrandID"))
-                .WillCascadeOnDelete(false);
+            //configuration
+            //    .HasRequired(m => m.ComputerBrand)
+            //    .WithMany()
+            //    .Map(m => m.MapKey("CompBrandID"))
+            //    .WillCascadeOnDelete(false);
+
+            //configuration
+            //    .HasOptional(m => m.Processor)
+            //    .WithMany()
+            //    .WillCascadeOnDelete(false);
 
             configuration
                 .Property(t => t.ComputerModel)
@@ -88,19 +139,19 @@ namespace ComputerShop.Data.Context
                           .IsConcurrencyToken(true);
             //.HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
 
-            configuration.ToTable("CompBrand");
+            //configuration.ToTable("CompBrand");
 
-            configuration
-                .Property(t => t.Id)
-                .HasColumnName("CompBrandID");
+            //configuration
+            //    .Property(t => t.Id)
+            //    .HasColumnName("CompBrandID");
 
             configuration
                 .Property(t => t.Name)
                 .HasMaxLength(255);
 
-            configuration
-                .Property(t => t.Name)
-                .HasColumnName("CompBrandName");
+            //configuration
+            //    .Property(t => t.Name)
+            //    .HasColumnName("CompBrandName");
         }
 
         private void ConfigureProcessor(DbModelBuilder modelBuilder)

@@ -14,20 +14,4 @@ namespace ComputerShop.Data.Context.StoredProcedures
         {
         }
     }
-
-    public class ComputerBrandStps : SimpleResultBaseStps<ComputerBrand>
-    {
-        public ComputerBrandStps(DbContext context)
-            : base(context)
-        {
-        }
-    }
-
-    public class ProcessorStps : SimpleResultBaseStps<Processor>
-    {
-        public ProcessorStps(DbContext context)
-           : base(context)
-        {
-        }
-    }
 }

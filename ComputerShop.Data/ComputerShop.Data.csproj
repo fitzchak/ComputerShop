@@ -51,7 +51,9 @@
     <Compile Include="Context\StoredProcedures\Base\StoredProcedure.cs" />
     <Compile Include="Context\StoredProcedures\Base\StoredProcedureParameters.cs" />
     <Compile Include="Context\StoredProcedures\Base\TableColumns.cs" />
+    <Compile Include="Context\StoredProcedures\ComputerBrandStps.cs" />
     <Compile Include="Context\StoredProcedures\ComputerStps.cs" />
+    <Compile Include="Context\StoredProcedures\ProcessorStps.cs" />
     <Compile Include="Model\ComputerBrand.cs" />
     <Compile Include="Model\Computer.cs" />
     <Compile Include="Model\Entity.cs" />

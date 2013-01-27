@@ -165,6 +165,10 @@
       <Project>{fb96c7ba-e5d3-4ce6-a12c-f40b298034f0}</Project>
       <Name>ComputerShop.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\EntityFramework.Extensions\EntityFramework.Extensions.csproj">
+      <Project>{02ADE1D8-EEC2-4645-BF96-C029C461DBDC}</Project>
+      <Name>EntityFramework.Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Home.cshtml" />

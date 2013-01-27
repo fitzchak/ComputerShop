@@ -3,7 +3,7 @@ using EntityFramework.Extensions;
 
 namespace ComputerShop.Data.Context.StoredProcedures.Base
 {
-    public abstract class StoredProcedure<TResult> : IStoredProcedure<TResult>
+    public abstract class StoredProcedure : IStoredProcedure
     {
         protected virtual StoredProcedureParameters Parameters { get; set; }
         protected virtual TableColumns Columns { get; set; }

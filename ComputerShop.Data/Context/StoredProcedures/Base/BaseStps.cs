@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Metadata.Edm;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
@@ -10,13 +11,17 @@ namespace ComputerShop.Data.Context.StoredProcedures.Base
 {
     public abstract class BaseStps
     {
-
+        public enum StpEnum
+        {
+            Update, Insert, Delete
+        }
     }
 
     public abstract class BaseStps<TResult, TEntity> 
-        : BaseStps where TEntity : class
+        : BaseStps 
+        where TEntity : class
     {
-        class UpdateStp : StoredProcedure<TResult>
+        class UpdateStp : StoredProcedure
         {
             protected TEntity Entity { get; set; }
             
@@ -44,7 +49,10 @@ END
                 var parametersChunk = string.Format("@{0} int\n\t,", KeyPropertyName);
                 foreach (var parameter in Parameters)
                 {
-                    parametersChunk += string.Format("@{0} {1} = null\n\t,", parameter.Key, parameter.Value.Type);
+                    parametersChunk += string.Format("@{0} {1} {2} = null\n\t,"
+                        , parameter.Key
+                        , parameter.Value.Type
+                        , parameter.Value.GetFormattedAdditionalParams());
                 }
                 parametersChunk = parametersChunk.Substring(0, parametersChunk.Length - 1);
 
@@ -67,7 +75,7 @@ END
 
             public override void Execute(DbContext context)
             {
-                var spCall = Name;
+                var spCall = "EXECUTE " + Name;
 
                 var parameters = new List<SqlParameter>();
 
@@ -84,6 +92,12 @@ END
                     object value = null;
 
                     var propertyValue = propertyInfo.GetValue(Entity, new object[]{});
+
+                    if (propertyInfo.PropertyType.IsEnum)
+                    {
+                        propertyValue = (int) propertyValue;
+                    }
+
                     if (propertyValue == null)
                     {
                         value = DBNull.Value;
@@ -108,7 +122,7 @@ END
             }
         }
 
-        class DeleteStp : StoredProcedure<TResult>
+        class DeleteStp : StoredProcedure
         {
             protected object KeyValue { get; set; }
 
@@ -141,7 +155,7 @@ END
 
             public override void Execute(DbContext context)
             {
-                var spCall = Name;
+                var spCall = "EXECUTE " + Name;
 
                 var parameters = new List<SqlParameter>();
 
@@ -153,7 +167,7 @@ END
             }
         }
 
-        class InsertStp : StoredProcedure<TResult>
+        class InsertStp : StoredProcedure
         {
             protected TEntity Entity { get; set; }
 
@@ -180,7 +194,7 @@ END
                 var parametersChunk = string.Empty;
                 foreach (var parameter in Parameters)
                 {
-                    parametersChunk += string.Format("@{0} {1} = null\n\t,", parameter.Key, parameter.Value.Type);
+                    parametersChunk += string.Format("@{0} {1} {2} = null\n\t,", parameter.Key, parameter.Value.Type, parameter.Value.GetFormattedAdditionalParams());
                 }
                 parametersChunk = parametersChunk.Substring(0, parametersChunk.Length - 1);
 
@@ -205,7 +219,7 @@ END
 
             public override void Execute(DbContext context)
             {
-                var spCall = Name;
+                var spCall = "EXECUTE " + Name;
 
                 var parameters = new List<SqlParameter>();
 
@@ -216,7 +230,13 @@ END
                     var propertyInfo = entityType.GetProperty(parameter.Key);
                     object value = null;
 
-                    var propertyValue = propertyInfo.GetValue(Entity, new object[]{});
+                    var propertyValue = propertyInfo.GetValue(Entity, new object[] { });
+
+                    if (propertyInfo.PropertyType.IsEnum)
+                    {
+                        propertyValue = (int)propertyValue;
+                    }
+
                     if (propertyValue == null)
                     {
                         value = DBNull.Value;
@@ -273,20 +293,46 @@ END
                     continue;
                 }
 
-                Parameters.Add(data.Key, new StoredProcedureParameter(data.Key, columnMeta.TypeUsage.EdmType.Name));
+                var edmTypeName = columnMeta.TypeUsage.EdmType.Name;
+
+                var storedProcedureParameter = new StoredProcedureParameter(data.Key, edmTypeName);
+
+                switch (edmTypeName)
+                {
+                    case "decimal":
+                        storedProcedureParameter.AdditionalTypeParams =
+                            getAdditionalTypeParams(new[] {"Precision", "Scale"}, columnMeta.TypeUsage.Facets);
+                        break;
+                    case "nvarchar":
+                        storedProcedureParameter.AdditionalTypeParams = 
+                            getAdditionalTypeParams(new[] { "MaxLength" }, columnMeta.TypeUsage.Facets);
+                        break;
+                }
+
+                Parameters.Add(data.Key, storedProcedureParameter);
                 Columns.Add(columnMeta.Name);
             }
         }
 
-        public virtual StoredProcedure<TResult> GetUpdateStp(TEntity entity)
+        private List<string> getAdditionalTypeParams(string[] names, IEnumerable<Facet> facets)
+        {
+            return 
+                facets
+                    .Where(f => names.Contains(f.Name))
+                    .Select(f => f.Value.ToString()).ToList();
+        }
+
+        public virtual StoredProcedure GetUpdateStp(TEntity entity)
         {
             return new UpdateStp(string.Format("stp_{0}_update", TableName), Parameters, TableName, Columns, KeyName, KeyColumn, KeyType, entity);
         }
-        public virtual StoredProcedure<TResult> GetDeleteStp(object keyValue)
+
+        public virtual StoredProcedure GetDeleteStp(object keyValue)
         {
             return new DeleteStp(string.Format("stp_{0}_delete", TableName), Parameters, TableName, Columns, KeyName, KeyColumn, KeyType, keyValue);
         }
-        public virtual StoredProcedure<TResult> GetInsertStp(TEntity entity)
+
+        public virtual StoredProcedure GetInsertStp(TEntity entity)
         {
             return new InsertStp(string.Format("stp_{0}_insert", TableName), Parameters, TableName, Columns, KeyName, KeyColumn, KeyType, entity);
         }
