@@ -22,8 +22,9 @@ namespace ComputerShop.Controllers
 
         protected ComputerShopController()
         {
-            ContextProvider = new EFContextProvider<ComputerShopContext>();
             ComputerShopContext = new ComputerShopContext();
+
+            ContextProvider = new EFContextProvider<ComputerShopContext>();
         }
 
         [HttpGet]
@@ -31,7 +32,7 @@ namespace ComputerShop.Controllers
         {
             return ContextProvider.Metadata();
         }
-
+        
         [HttpGet]
         public object Lookups()
         {

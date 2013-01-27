@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="App_Start\BreezeWebApiConfig.cs" />
     <Compile Include="Controllers\ComputerShopApiController.cs" />
+    <Content Include="createScript.sql" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
