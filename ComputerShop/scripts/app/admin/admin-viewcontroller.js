@@ -67,14 +67,14 @@
             return this;
         },
         clicked: function (data) {
-            var passedName = data.toElement.className;
+            var passedName = data.target.className;
 
             this.$el.find('li').each(function () {
                 $(this).removeClass('current_page_item');
             });
 
-            $(data.toElement.parentNode).addClass('current_page_item');
-
+            $(data.target.parentNode).addClass('current_page_item');
+            
             this.showEditViewOf(passedName);
         },
         showEditViewOf: function (name) {
@@ -218,6 +218,8 @@
         save: function () {
             dataservice.saveChanges([this.model]);
             $("#actions", self.$el).addClass('hidden');
+            
+            getComputers();
         },
         cancel: function () {
             this.model.entityAspect.rejectChanges();

@@ -107,6 +107,9 @@ namespace ComputerShop.Controllers
                 case "Modified":
                     stp = BaseStps.StpEnum.Update;
                     break;
+                case "Added":
+                    stp = BaseStps.StpEnum.Insert;
+                    break;
                 default:
                     stp = null;
                     break;
