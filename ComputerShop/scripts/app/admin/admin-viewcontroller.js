@@ -1,14 +1,14 @@
 ﻿/// <reference path="~/scripts/breeze.debug.js" />
 /// <reference path="~/scripts/backbone.stickit.js" />
+
 (function ($, Backbone, dataservice) {
-
+    'use strict';
     // Get templates
-    var menuContent;
-    var menuTemplate;
-    var content;
-
-    var computerEditTemplate;
-    var nameDescriptionEditTemplate;
+    var menuContent,
+        menuTemplate,
+        content,
+        computerEditTemplate,
+        nameDescriptionEditTemplate;
 
     $(document).ready(function () {
         documentReady();
@@ -30,12 +30,12 @@
         });
     };
 
-    var menuView = Backbone.View.extend({
-        bindings: {
-            '#items': {
-                observe: 'items',
-                updateMethod: 'html',
-                onGet: function (items) {
+    var MenuView = Backbone.View.extend({
+        bindings:{
+            '#items':{
+                observe:'items',
+                updateMethod:'html',
+                onGet:function (items) {
 
                     var result = '';
 
@@ -47,10 +47,10 @@
                 }
             }
         },
-        events: {
-            'click li': 'clicked'
+        events:{
+            'click li':'clicked'
         },
-        render: function () {
+        render:function () {
             var self = this;
 
             this.$el.html(menuTemplate);
@@ -66,7 +66,7 @@
 
             return this;
         },
-        clicked: function (data) {
+        clicked:function (data) {
             var passedName = data.target.className;
 
             this.$el.find('li').each(function () {
@@ -74,20 +74,19 @@
             });
 
             $(data.target.parentNode).addClass('current_page_item');
-            
             this.showEditViewOf(passedName);
         },
-        showEditViewOf: function (name) {
+        showEditViewOf:function (name) {
             var foundItem = this.getSelectedItem(name);
 
             foundItem.getFunc();
         },
-        getSelectedItem: function (name) {
-            var items = this.model.get('items');
-            var foundItem;
+        getSelectedItem:function (name) {
+            var items = this.model.get('items'),
+                foundItem;
 
             items.forEach(function (item) {
-                if (item.name == name) {
+                if (item.name === name) {
                     foundItem = item;
                 }
             });
@@ -97,25 +96,24 @@
             return foundItem;
         }
     });
-
-    var nameDescriptionEditView = Backbone.View.extend({
-        bindings: {
-            '#id': 'id',
-            '#name': 'name',
-            '#description': 'description'
+    var NameDescriptionEditView = Backbone.View.extend({
+        bindings:{
+            '#id':'id',
+            '#name':'name',
+            '#description':'description'
         },
-        events: {
-            'click #save': 'save',
-            'click #cancel': 'cancel',
-            'click #delete': 'deleteAction'
+        events:{
+            'click #save':'save',
+            'click #cancel':'cancel',
+            'click #delete':'deleteAction'
         },
-        render: function () {
+        render:function () {
             var self = this;
 
             this.$el.html(nameDescriptionEditTemplate);
 
             this.model.entityAspect.propertyChanged.subscribe(function (changeArgs) {
-                if (changeArgs.propertyName == null || changeArgs.propertyName == 'timestamp') {
+                if (changeArgs.propertyName === null || changeArgs.propertyName === 'timestamp') {
                     return;
                 }
                 // show save and cancel buttons
@@ -127,83 +125,84 @@
 
             return this;
         },
-        save: function () {
+        save:function () {
+            var self = this;
             dataservice.saveChanges([this.model]).then(this.parentDataFunction);
             $("#actions", self.$el).addClass('hidden');
         },
-        cancel: function () {
+        cancel:function () {
+            var self = this;
             this.model.entityAspect.rejectChanges();
             $("#actions", self.$el).addClass('hidden');
         },
-        deleteAction: function () {
+        deleteAction:function () {
             this.model.entityAspect.setDeleted();
             dataservice.saveChanges([this.model]).then(this.parentDataFunction);
         },
-        parentDataFunction: function () {
+        parentDataFunction:function () {
         }
     });
-
-    var computerEditView = Backbone.View.extend({
-        bindings: {
-            '#id': 'id',
-            'select#brand': {
-                observe: 'computerBrand',
-                selectOptions: {
-                    collection: function () {
+    var ComputerEditView = Backbone.View.extend({
+        bindings:{
+            '#id':'id',
+            'select#brand':{
+                observe:'computerBrand',
+                selectOptions:{
+                    collection:function () {
                         return dataservice.getComputerBrandsFromCache();
                     },
-                    labelPath: 'attributes.name'
+                    labelPath:'attributes.name'
                 }
             },
-            '#description': 'description',
+            '#description':'description',
 
-            '#model': 'computerModel',
-            'select#processor': {
-                observe: 'processor',
-                selectOptions: {
-                    collection: function () {
+            '#model':'computerModel',
+            'select#processor':{
+                observe:'processor',
+                selectOptions:{
+                    collection:function () {
                         return dataservice.getProcessorsFromCache();
                     },
-                    labelPath: 'attributes.name'
+                    labelPath:'attributes.name'
                 }
             },
-            '#ram-capacity': 'ramCapacity',
-            'select#ram-unit': {
-                observe: 'ramUnit',
-                selectOptions: {
-                    collection: function () {
+            '#ram-capacity':'ramCapacity',
+            'select#ram-unit':{
+                observe:'ramUnit',
+                selectOptions:{
+                    collection:function () {
                         return dataservice.getUnits();
                     },
 
-                    labelPath: 'value',
-                    valuePath: 'id'
+                    labelPath:'value',
+                    valuePath:'id'
                 }
             },
-            '#hdd-capacity': 'harddiskCapacity',
-            'select#hdd-unit': {
-                observe: 'harddiskCapacityUnit',
-                selectOptions: {
-                    collection: function () {
+            '#hdd-capacity':'harddiskCapacity',
+            'select#hdd-unit':{
+                observe:'harddiskCapacityUnit',
+                selectOptions:{
+                    collection:function () {
                         return dataservice.getUnits();
                     },
 
-                    labelPath: 'value',
-                    valuePath: 'id'
+                    labelPath:'value',
+                    valuePath:'id'
                 }
             },
-            '#price': 'price'
+            '#price':'price'
         },
-        events: {
-            'click #save': 'save',
-            'click #cancel': 'cancel',
-            'click #delete': 'deleteAction'
+        events:{
+            'click #save':'save',
+            'click #cancel':'cancel',
+            'click #delete':'deleteAction'
         },
-        render: function () {
+        render:function () {
             this.$el.html(computerEditTemplate);
             var self = this;
 
             this.model.entityAspect.propertyChanged.subscribe(function (changeArgs) {
-                if (changeArgs.propertyName == null || changeArgs.propertyName == 'timestamp') {
+                if (changeArgs.propertyName === null || changeArgs.propertyName === 'timestamp') {
                     return;
                 }
                 // show save and cancel buttons
@@ -215,24 +214,26 @@
 
             return this;
         },
-        save: function () {
+        save:function () {
+            var self = this;
+
             dataservice.saveChanges([this.model]);
             $("#actions", self.$el).addClass('hidden');
-            
+
             getComputers();
         },
-        cancel: function () {
+        cancel:function () {
+            var self = this;
             this.model.entityAspect.rejectChanges();
             $("#actions", self.$el).addClass('hidden');
         },
-        deleteAction: function () {
+        deleteAction:function () {
             this.model.entityAspect.setDeleted();
             dataservice.saveChanges([this.model]);
 
             getComputers();
         }
     });
-
 
     var getProcessors = function () {
         dataservice.getProcessors()
@@ -251,14 +252,14 @@
     function showNameDescriptionItemViews(items, parentDataFunction) {
         content.empty();
         items.forEach(
-                function (item) {
-                    showNameDescriptionItemView(item, parentDataFunction);
-                }
-            );
+            function (item) {
+                showNameDescriptionItemView(item, parentDataFunction);
+            }
+        );
     }
 
     var showNameDescriptionItemView = function (item, parentDataFunction) {
-        var view = new nameDescriptionEditView({ model: item });
+        var view = new NameDescriptionEditView({ model:item });
         view.parentDataFunction = parentDataFunction;
         content.append(view.render().el);
 
@@ -275,7 +276,7 @@
     };
 
     var showComputerView = function (computer) {
-        var view = new computerEditView({ model: computer });
+        var view = new ComputerEditView({ model:computer });
         content.append(view.render().el);
     };
 
@@ -287,16 +288,17 @@
 
         var menuItems = new MenuItems(
             {
-                items: [
-                    { name: "Computers", getFunc: getComputers, createFunc: dataservice.createComputer, showViewFunc: showComputerView },
-                    { name: "Brands", getFunc: getComputerBrands, createFunc: dataservice.createComputerBrand, showViewFunc: showNameDescriptionItemView },
-                    { name: "Processors", getFunc: getProcessors, createFunc: dataservice.createProcessor, showViewFunc: showNameDescriptionItemView }
+                items:[
+                    { name:"Computers", getFunc:getComputers, createFunc:dataservice.createComputer, showViewFunc:showComputerView },
+                    { name:"Brands", getFunc:getComputerBrands, createFunc:dataservice.createComputerBrand, showViewFunc:showNameDescriptionItemView },
+                    { name:"Processors", getFunc:getProcessors, createFunc:dataservice.createProcessor, showViewFunc:showNameDescriptionItemView }
                 ]
-            });
+            }
+        );
 
         menuContent.empty();
 
-        var view = new menuView({ model: menuItems });
+        var view = new MenuView({ model:menuItems });
         menuContent.append(view.render().el);
     };
 

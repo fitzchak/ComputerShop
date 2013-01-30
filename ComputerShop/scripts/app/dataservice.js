@@ -1,7 +1,7 @@
 ﻿/// <reference path="../breeze.intellisense.js" />
 
 app.dataservice = (function (breeze, logger) {
-
+    'use strict';
     /*** Breeze Configuration ***/
 
     // configure Breeze for Backbone (config'd for Web API by default)
@@ -95,8 +95,8 @@ app.dataservice = (function (breeze, logger) {
     };
 
     var createEntity = function (type) {
-        var type = manager.metadataStore.getEntityType(type);
-        var newEntity = type.createEntity();
+        var _type = manager.metadataStore.getEntityType(type);
+        var newEntity = _type.createEntity();
         return manager.addEntity(newEntity);
     };
 

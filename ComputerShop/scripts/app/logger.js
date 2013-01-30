@@ -1,4 +1,6 @@
 ﻿app.logger = (function ($) {
+    'use strict';
+
     var logCounter = 1;
     var logger = {
         error: error,

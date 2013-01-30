@@ -1,13 +1,12 @@
 ﻿/// <reference path="~/scripts/breeze.debug.js" />
 /// <reference path="~/scripts/backbone.stickit.js" /> 
-
 (function ($, Backbone, dataservice) {
-
+    'use strict';
     // Get templates
-    var mainContent;
-    var computerTemplate;
-    var computerBrandSidebarContent;
-    var computerBrandMenuTemplate;
+    var mainContent,
+        computerTemplate,
+        computerBrandSidebarContent,
+        computerBrandMenuTemplate;
 
     $(document).ready(function () {
         documentReady();
@@ -27,7 +26,7 @@
             templatesLoaded();
         });
     };
-    var computerBrandMenuView = Backbone.View.extend({
+    var ComputerBrandMenuView = Backbone.View.extend({
         bindings: {
             '#name': 'name'
         },
@@ -46,7 +45,7 @@
         }
     });
 
-    var computerView = Backbone.View.extend({
+    var ComputerView = Backbone.View.extend({
         bindings: {
             '#description': 'description',
             '#brand-name': {
@@ -63,7 +62,7 @@
             '#processor-name': {
                 observe: 'processor',
                 onGet: function (value) {
-                    if (value == null) {
+                    if (value === null) {
                         return dataservice.getNotAvailableValue();
                     }
                     return value.get('name');
@@ -89,7 +88,7 @@
             '#price': {
                 observe: 'price',
                 onGet: function (value) {
-                    if (value == "") {
+                    if (value === "") {
                         return dataservice.getNotAvailableValue();
                     }
 
@@ -121,12 +120,12 @@
             allComputerBrands.id = -1;
             allComputerBrands.set('name', 'all');
 
-            var view = new computerBrandMenuView({ model: allComputerBrands });
+            var view = new ComputerBrandMenuView({ model: allComputerBrands });
             computerBrandSidebarContent.append(view.render().el);
 
             computerBrands.forEach(
                 function (computerBrand) {
-                    var view = new computerBrandMenuView({ model: computerBrand });
+                    var view = new ComputerBrandMenuView({ model: computerBrand });
                     computerBrandSidebarContent.append(view.render().el);
                 }
             );
@@ -156,9 +155,10 @@
 
             computers.forEach(
                 function (computer) {
-                    var view = new computerView({ model: computer });
+                    var view = new ComputerView({ model: computer });
                     mainContent.append(view.render().el);
-                });
+                }
+            );
         }
     };
 
@@ -166,6 +166,5 @@
         getComputers();
         getComputerBrands();
     }
-
 
 })(jQuery, Backbone, app.dataservice);
